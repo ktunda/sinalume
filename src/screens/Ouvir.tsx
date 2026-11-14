@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Avatar } from '../components/Avatar'
 import { SeletorMotor } from '../components/SeletorMotor'
-import { sinalizar } from '../lib/vlibras'
+import { aoFalharTraducao, sinalizar } from '../lib/vlibras'
 import { escutar, falaSuportada } from '../lib/voz'
 
 /** Fluxo 2: o ouvinte fala (ou digita) e o surdo vê a legenda e o avatar em Libras. */
@@ -13,8 +13,12 @@ export function Ouvir() {
   const [digitado, setDigitado] = useState('')
   const [estado, setEstado] = useState('')
   const parar = useRef<() => void>(() => {})
+  useEffect(() => aoFalharTraducao(setErro), [])
+  // ao sair da tela, desliga o microfone
+  useEffect(() => () => parar.current(), [])
 
   const enviar = (texto: string) => {
+    setErro('')
     setFrases((f) => [...f.slice(-20), texto])
     sinalizar(texto)
   }
@@ -64,6 +68,20 @@ export function Ouvir() {
           onPointerUp={terminar}
           onPointerLeave={() => ouvindo && terminar()}
           onContextMenu={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            // teclado e leitores de tela: segure Espaço ou Enter para falar
+            if ((e.key === ' ' || e.key === 'Enter') && !e.repeat && !ouvindo) {
+              e.preventDefault()
+              comecar()
+            }
+          }}
+          onKeyUp={(e) => {
+            if ((e.key === ' ' || e.key === 'Enter') && ouvindo) {
+              e.preventDefault()
+              terminar()
+            }
+          }}
+          aria-pressed={ouvindo}
         >
           {ouvindo ? '🎤 Ouvindo… solte para enviar' : '🎤 Segure para falar'}
         </button>

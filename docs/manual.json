@@ -107,7 +107,8 @@
    ],
    "dicas": [
     "Frases curtas são traduzidas melhor pelo avatar.",
-    "O avatar baixa cerca de 14 MB na primeira vez e precisa de internet."
+    "O avatar baixa cerca de 14 MB na primeira vez e precisa de internet. Sem internet, a legenda continua e o app avisa.",
+    "No computador, segure a barra de espaço para falar."
    ]
   },
   {
@@ -136,6 +137,7 @@
     "Para todos verem, ligue o celular ou notebook ao projetor ou à TV."
    ],
    "dicas": [
+    "O avatar termina cada sinal antes de começar o próximo. Se a fala for muito rápida, ele pula para as frases mais recentes.",
     "Deixe o microfone perto de quem fala ou ligado à mesa de som; música alta atrapalha a transcrição.",
     "Para a igreja ouvir a voz do app, ligue a saída de som do aparelho à mesa de som.",
     "Desmarque \"Mostrar avatar\" para deixar só a legenda.",

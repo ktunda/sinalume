@@ -3,7 +3,7 @@ import type { Rota } from '../App'
 import { Avatar } from '../components/Avatar'
 import { SeletorMotor } from '../components/SeletorMotor'
 import { suporta } from '../lib/plataforma'
-import { sinalizar } from '../lib/vlibras'
+import { aoFalharTraducao, sinalizar } from '../lib/vlibras'
 import { escutar, falaSuportada } from '../lib/voz'
 import { Ver } from './Ver'
 
@@ -71,17 +71,31 @@ function Pregacao() {
   }, [avatarLigado])
 
   useEffect(() => () => parar.current(), [])
+  useEffect(() => aoFalharTraducao(setErro), [])
 
-  const iniciar = async () => {
-    setErro('')
-    setAtivo(true)
-    // mantém a tela acesa durante o culto
+  const pedirTelaAcesa = async () => {
     try {
       const nav = navigator as unknown as { wakeLock?: { request: (t: 'screen') => Promise<{ release: () => Promise<void> }> } }
       wakeLock.current = (await nav.wakeLock?.request('screen')) ?? null
     } catch {
       /* sem suporte: o usuário ajusta o tempo de tela */
     }
+  }
+  // o navegador solta a "tela acesa" quando o app sai da frente; pede de novo ao voltar
+  useEffect(() => {
+    if (!ativo) return
+    const voltar = () => {
+      if (document.visibilityState === 'visible') void pedirTelaAcesa()
+    }
+    document.addEventListener('visibilitychange', voltar)
+    return () => document.removeEventListener('visibilitychange', voltar)
+  }, [ativo])
+
+  const iniciar = async () => {
+    setErro('')
+    setAtivo(true)
+    // mantém a tela acesa durante o culto
+    await pedirTelaAcesa()
     // iPhone não tem tela cheia para páginas: escondemos a barra do app e ocupamos a tela toda
     if (suporta.telaCheia()) document.documentElement.requestFullscreen().catch(() => setTelaCheia(true))
     else setTelaCheia(true)

@@ -32,6 +32,32 @@ let estado: EstadoAvatar = 'parado'
 let ultimaGlosa = ''
 let velocidade: Velocidade = 1.0
 const fila: string[] = []
+// glosas prontas esperando o avatar terminar o sinal atual (no culto a fala não para)
+const filaGlosas: string[] = []
+let tocando = false
+let ultimoPlay = 0
+const MAX_ESPERA = 2
+const ouvintesFalha = new Set<(msg: string) => void>()
+
+/** Avisa a tela quando o texto não pôde virar Libras (ex.: sem internet). */
+export function aoFalharTraducao(f: (msg: string) => void): () => void {
+  ouvintesFalha.add(f)
+  return () => {
+    ouvintesFalha.delete(f)
+  }
+}
+
+function tocar(glosa: string) {
+  ultimaGlosa = glosa
+  tocando = true
+  ultimoPlay = Date.now()
+  enviar('playNow', glosa)
+}
+
+function proximaGlosa() {
+  const g = filaGlosas.shift()
+  if (g) tocar(g)
+}
 const ouvintesEstado = new Set<(s: EstadoAvatar) => void>()
 
 function mudarEstado(s: EstadoAvatar) {
@@ -82,7 +108,15 @@ async function criarPlayer() {
     const pendente = fila.splice(0)
     if (pendente.length) void sinalizar(pendente.join('. '))
   }
-  for (const nome of ['GetAvatar', 'onPlayingStateChange', 'CounterGloss', 'FinishWelcome', 'updateProgress']) {
+  w.onPlayingStateChange = (...args: unknown[]) => {
+    const v = String(args[0]).toLowerCase()
+    const agora = v === 'true' || v === '1'
+    if (tocando && !agora) {
+      tocando = false
+      proximaGlosa()
+    } else tocando = agora
+  }
+  for (const nome of ['GetAvatar', 'CounterGloss', 'FinishWelcome', 'updateProgress']) {
     if (typeof w[nome] !== 'function') w[nome] = () => {}
   }
 
@@ -149,13 +183,23 @@ export async function sinalizar(texto: string): Promise<void> {
     while (fila.length > 3) fila.shift()
     return
   }
+  let glosa = ''
   try {
-    const glosas = await Promise.all(partes.map(traduzirParaGlosa))
-    ultimaGlosa = glosas.filter(Boolean).join(' ')
-    if (ultimaGlosa) enviar('playNow', ultimaGlosa)
+    glosa = (await Promise.all(partes.map(traduzirParaGlosa))).filter(Boolean).join(' ')
   } catch (e) {
     console.warn('[vlibras] tradução falhou', e)
+    ouvintesFalha.forEach((f) =>
+      f(navigator.onLine ? 'O tradutor do VLibras não respondeu. A legenda continua; tente de novo.' : 'Sem internet: o avatar precisa de conexão. A legenda continua funcionando.'),
+    )
+    return
   }
+  if (!glosa) return
+  // se o avatar ainda está sinalizando, espera a vez (sem cortar o sinal no meio).
+  // Proteção: se o aviso de "terminou" não chegar em 20 s, segue mesmo assim.
+  if (tocando && Date.now() - ultimoPlay < 20_000) {
+    filaGlosas.push(glosa)
+    while (filaGlosas.length > MAX_ESPERA) filaGlosas.shift()
+  } else tocar(glosa)
 }
 
 export function definirVelocidade(v: Velocidade): void {
@@ -164,10 +208,15 @@ export function definirVelocidade(v: Velocidade): void {
 }
 
 export function repetir(): void {
-  if (estado === 'pronto' && ultimaGlosa) enviar('playNow', ultimaGlosa)
+  if (estado === 'pronto' && ultimaGlosa) {
+    filaGlosas.length = 0
+    tocar(ultimaGlosa)
+  }
 }
 
 export function parar(): void {
+  filaGlosas.length = 0
+  tocando = false
   if (estado === 'pronto') enviar('stopAll')
 }
 

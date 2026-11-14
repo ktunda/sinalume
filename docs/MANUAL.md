@@ -69,7 +69,8 @@ A pessoa ouvinte fala (ou digita). A fala vira legenda grande e o avatar do VLib
 **Dicas**
 
 - Frases curtas são traduzidas melhor pelo avatar.
-- O avatar baixa cerca de 14 MB na primeira vez e precisa de internet.
+- O avatar baixa cerca de 14 MB na primeira vez e precisa de internet. Sem internet, a legenda continua e o app avisa.
+- No computador, segure a barra de espaço para falar.
 
 <a id="transcricao"></a>
 ## Transcrição da fala (navegador ou aparelho)
@@ -97,6 +98,7 @@ Para cultos, missas, palestras e reuniões, nos dois sentidos: a pregação vira
 
 **Dicas**
 
+- O avatar termina cada sinal antes de começar o próximo. Se a fala for muito rápida, ele pula para as frases mais recentes.
 - Deixe o microfone perto de quem fala ou ligado à mesa de som; música alta atrapalha a transcrição.
 - Para a igreja ouvir a voz do app, ligue a saída de som do aparelho à mesa de som.
 - Desmarque "Mostrar avatar" para deixar só a legenda.
