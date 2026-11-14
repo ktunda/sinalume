@@ -11,13 +11,8 @@ paginas = json.loads(pathlib.Path(sys.argv[2]).read_text()) if len(sys.argv) > 2
 SECOES = {s['id']: s for s in dados['secoes']}
 versao = '/'.join(reversed(dados['versao'].split('-')))
 
-CAPITULOS = [
-    ('primeiros', 'Primeiros passos', 'Abrir, instalar e escolher a situação.', ['comecar', 'instalar']),
-    ('conversar', 'Conversar', 'Os dois sentidos da conversa e a transcrição da fala.', ['ver', 'ouvir', 'transcricao']),
-    ('culto', 'Na igreja', 'Pregação em Libras no telão e a pessoa surda falando à igreja.', ['culto']),
-    ('comunidade', 'Ajudar a comunidade', 'Gravar sinais, acompanhar o vocabulário e mandar sugestões.', ['ensinar', 'sinais', 'sugestoes']),
-    ('privacidade', 'Privacidade e ajuda', 'Consentimento, dados e o que fazer quando algo não funciona.', ['termo', 'sobre', 'ajuda', 'problemas']),
-]
+# capítulos vêm de src/lib/manual.ts (fonte única, a mesma do app)
+CAPITULOS = [(c['id'], c['titulo'], c['resumo'], c['secoes']) for c in dados['capitulos']]
 usados = {i for c in CAPITULOS for i in c[3]}
 extras = [s['id'] for s in dados['secoes'] if s['id'] not in usados]
 if extras:  # seção nova ainda sem capítulo: entra no fim, para nunca sumir do PDF

@@ -171,7 +171,12 @@ export const MANUAL: SecaoManual[] = [
     id: 'ajuda',
     rota: 'ajuda',
     titulo: 'Este manual',
-    resumo: 'O manual fica no próprio app, no botão "Manual" da tela inicial e no "?" de cada tela.',
+    resumo: 'O manual fica no próprio app, no botão "Manual" da tela inicial e no "?" de cada tela. Ele é dividido em capítulos, como a versão em PDF.',
+    passos: [
+      'No alto do manual, toque num capítulo do sumário para ir direto a ele.',
+      'No fim de cada capítulo, toque em "Voltar ao sumário".',
+      'Para imprimir ou mandar para alguém, toque em "Baixar o manual em PDF", no fim da página.',
+    ],
   },
   {
     id: 'problemas',
@@ -186,6 +191,22 @@ export const MANUAL: SecaoManual[] = [
     ],
     dicas: ['O Sinalume não substitui um intérprete de Libras em consultas médicas, assuntos jurídicos e outras situações importantes.'],
   },
+]
+
+export interface CapituloManual {
+  id: string
+  titulo: string
+  resumo: string
+  secoes: string[]
+}
+
+/** Capítulos do manual (no app e no PDF). Toda seção precisa estar em exatamente um capítulo. */
+export const CAPITULOS: CapituloManual[] = [
+  { id: 'primeiros', titulo: 'Primeiros passos', resumo: 'Abrir, instalar e escolher a situação.', secoes: ['comecar', 'instalar'] },
+  { id: 'conversar', titulo: 'Conversar', resumo: 'Os dois sentidos da conversa e a transcrição da fala.', secoes: ['ver', 'ouvir', 'transcricao'] },
+  { id: 'igreja', titulo: 'Na igreja', resumo: 'Pregação em Libras no telão e a pessoa surda falando à igreja.', secoes: ['culto'] },
+  { id: 'comunidade', titulo: 'Ajudar a comunidade', resumo: 'Gravar sinais, acompanhar o vocabulário e mandar sugestões.', secoes: ['ensinar', 'sinais', 'sugestoes'] },
+  { id: 'privacidade', titulo: 'Privacidade e ajuda', resumo: 'Consentimento, dados e o que fazer quando algo não funciona.', secoes: ['termo', 'sobre', 'ajuda', 'problemas'] },
 ]
 
 /** Gera o manual em Markdown (docs/MANUAL.md). */

@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { MANUAL, manualEmMarkdown } from '../src/lib/manual.ts'
+import { CAPITULOS, MANUAL, manualEmMarkdown } from '../src/lib/manual.ts'
 
 test('toda rota do app tem seção no manual', () => {
   const app = readFileSync('src/App.tsx', 'utf8')
@@ -23,4 +23,12 @@ test('seções do manual têm id único e texto', () => {
   const ids = MANUAL.map((s) => s.id)
   assert.equal(new Set(ids).size, ids.length)
   for (const s of MANUAL) assert.ok(s.resumo.length > 20, `seção ${s.id} sem resumo`)
+})
+
+test('toda seção do manual está em exatamente um capítulo', () => {
+  const nos = CAPITULOS.flatMap((c) => c.secoes)
+  assert.equal(new Set(nos).size, nos.length, 'seção repetida em capítulos')
+  const ids = MANUAL.map((s) => s.id)
+  assert.deepEqual(ids.filter((i) => !nos.includes(i)), [], 'seção sem capítulo em CAPITULOS (src/lib/manual.ts)')
+  assert.deepEqual(nos.filter((i) => !ids.includes(i)), [], 'capítulo aponta para seção inexistente')
 })

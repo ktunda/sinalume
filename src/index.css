@@ -220,13 +220,6 @@ main { flex: 1; }
 
 /* Manual */
 .topo__ajuda { margin-left: auto; background: transparent; border-color: #fff; color: #fff; min-width: 44px; padding: 0; border-radius: 999px; font-size: 1.2rem; }
-.ajuda__indice { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
-.ajuda__indice a { display: inline-flex; min-height: 40px; align-items: center; padding: 0 12px; border: 2px solid var(--borda); border-radius: 999px; background: #fff; color: var(--azul); font-weight: 600; text-decoration: none; }
-.ajuda__secao { background: #fff; border: 2px solid var(--borda); border-radius: 16px; padding: 12px 16px; scroll-margin-top: 80px; }
-.ajuda__secao ol { padding-left: 22px; }
-.ajuda__secao li { margin: 6px 0; }
-.ajuda__dicas { background: #fff7e6; border-radius: 12px; padding: 8px 12px; }
-.ajuda__dicas ul { margin: 6px 0 0; padding-left: 18px; }
 
 /* Culto: sentidos, botão no alto, celular com legenda primeiro e avatar menor */
 .culto { display: flex; flex-direction: column; gap: 12px; }
@@ -258,3 +251,36 @@ main { flex: 1; }
 .topo h1 { overflow-wrap: anywhere; }
 .chave { word-break: break-all; font-size: .85em; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Manual no app — padrão da marca (igual ao PDF) */
+.tela--ajuda { gap: 16px; }
+.ajuda__capa { background: var(--azul); color: #fff; border-radius: 18px; padding: 20px; position: relative; overflow: hidden; }
+.ajuda__capa::after { content: ''; position: absolute; right: -36px; top: -36px; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, var(--ambar) 0 20%, rgba(244,165,28,.25) 21% 46%, transparent 47%); }
+.ajuda__rotulo, .ajuda__abertura span { font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--ambar); }
+.ajuda__capa h2 { margin: 6px 0 6px; font-size: 1.5rem; line-height: 1.15; color: #fff; max-width: 85%; }
+.ajuda__capa p { margin: 0; color: rgba(255,255,255,.85); font-size: .95rem; }
+.ajuda__sumario { list-style: none; margin: 0; padding: 0; background: #fff; border: 2px solid var(--borda); border-radius: 18px; overflow: hidden; }
+.ajuda__sumario li + li { border-top: 1px solid var(--borda); }
+.ajuda__sumario a { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; text-decoration: none; color: var(--texto); min-height: 56px; }
+.ajuda__sumario strong { display: block; color: var(--azul); font-size: 1.08rem; }
+.ajuda__sumario small { display: block; color: var(--texto-suave); font-size: .85rem; margin-top: 2px; }
+.ajuda__num { color: var(--ambar); font-weight: 900; font-size: 1.05rem; min-width: 26px; }
+.ajuda__capitulo { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 76px; }
+.ajuda__abertura { background: var(--azul); color: #fff; border-radius: 18px; padding: 16px 18px; margin-top: 8px; }
+.ajuda__abertura h2 { margin: 4px 0 2px; color: #fff; font-size: 1.4rem; }
+.ajuda__abertura p { margin: 0; color: rgba(255,255,255,.85); font-size: .95rem; }
+.ajuda__secao { background: #fff; border: 2px solid var(--borda); border-radius: 18px; padding: 16px; scroll-margin-top: 76px; }
+.ajuda__secao h3 { margin: 0 0 8px; color: var(--azul); font-size: 1.2rem; }
+.ajuda__secao h3::before { content: ''; display: block; width: 32px; height: 4px; border-radius: 4px; background: var(--ambar); margin-bottom: 10px; }
+.ajuda__resumo { margin: 0 0 10px; }
+.ajuda__passos { counter-reset: p; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ajuda__passos li { counter-increment: p; position: relative; padding-left: 40px; min-height: 28px; line-height: 1.45; }
+.ajuda__passos li::before { content: counter(p); position: absolute; left: 0; top: -1px; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--azul); color: #fff; font-weight: 800; font-size: .9rem; display: grid; place-items: center; }
+.ajuda__dicas { margin-top: 12px; background: var(--fundo); border-left: 5px solid var(--ambar); border-radius: 0 12px 12px 0; padding: 10px 14px; }
+.ajuda__dicas span { font-size: .75rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #7A4D00; }
+.ajuda__dicas ul { margin: 6px 0 0; padding-left: 18px; }
+.ajuda__dicas li + li { margin-top: 4px; }
+.ajuda__voltar { align-self: flex-start; background: transparent; border: 0; color: var(--azul); font-weight: 700; padding: 6px 0; min-height: 44px; }
+.ajuda__pdf { display: flex; justify-content: center; align-items: center; min-height: 52px; border: 2px solid var(--azul); border-radius: 14px; color: var(--azul); font-weight: 800; text-decoration: none; margin-top: 8px; }

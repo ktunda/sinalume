@@ -157,7 +157,11 @@ Mostra o que o app faz com os dados, os limites do app e os créditos (VLibras, 
 <a id="ajuda"></a>
 ## Este manual
 
-O manual fica no próprio app, no botão "Manual" da tela inicial e no "?" de cada tela.
+O manual fica no próprio app, no botão "Manual" da tela inicial e no "?" de cada tela. Ele é dividido em capítulos, como a versão em PDF.
+
+1. No alto do manual, toque num capítulo do sumário para ir direto a ele.
+2. No fim de cada capítulo, toque em "Voltar ao sumário".
+3. Para imprimir ou mandar para alguém, toque em "Baixar o manual em PDF", no fim da página.
 
 <a id="problemas"></a>
 ## Problemas comuns
