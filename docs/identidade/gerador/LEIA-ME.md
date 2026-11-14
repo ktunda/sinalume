@@ -8,3 +8,10 @@ Gera o **Manual da Marca** e a **Apresentação do projeto** em PDF, seguindo a 
 4. `python3 apresentacao.py && node render.js $PWD/apresentacao.html apresentacao.pdf`
 
 Toda função nova do app deve ser incluída em `apresentacao.py` (e em `src/lib/manual.ts`) antes de gerar o PDF.
+
+## Manual do usuário (PDF)
+
+1. `npm run manual` (gera `docs/MANUAL.md` e `docs/manual.json` a partir de `src/lib/manual.ts`)
+2. `sh docs/identidade/gerador/manual_usuario.sh docs/manual.json docs/Sinalume-Manual.pdf`
+
+O script faz duas passadas para preencher as páginas do sumário. Seção nova sem capítulo entra em "Outras funções".
