@@ -59,6 +59,16 @@ export default defineConfig({
             },
           },
           {
+            // biblioteca de transcrição no aparelho (Transformers.js + ONNX Runtime) — baixada uma vez
+            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@huggingface|onnxruntime-web).*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'transcricao-biblioteca',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
             // dicionário de sinais do VLibras: reaproveita sinais já baixados
             urlPattern: /^https:\/\/(www\.)?vlibras\.gov\.br\/dict.*/,
             handler: 'CacheFirst',

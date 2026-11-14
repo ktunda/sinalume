@@ -182,3 +182,32 @@ main { flex: 1; }
 .comunidade__envios summary { cursor: pointer; font-weight: 700; color: var(--azul); }
 .comunidade__envios ul { margin: 6px 0 0; padding-left: 18px; font-size: .9rem; }
 .inicio__secundarios button { min-height: 56px; }
+
+/* ---- melhorias da revisão ---- */
+.carregando-tela { padding: 24px 16px; color: var(--texto-suave); }
+.topo__logo { width: auto; }
+/* aviso de carregamento cobre a tela de abertura do Unity */
+.avatar__aviso--cobre { background: #fff; inset: 0 0 61px; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-weight: 600; }
+.avatar__aviso--cobre small { font-weight: 400; color: var(--texto-suave); }
+.girando { width: 32px; height: 32px; border-radius: 50%; border: 4px solid var(--borda); border-top-color: var(--azul); animation: girar 0.9s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .girando { animation: none; } }
+/* Ouvir: avatar menor em telas baixas e botão de falar sempre à mão */
+.tela--ouvir .avatar__palco { max-height: 42vh; }
+@media (max-height: 700px) { .tela--ouvir .avatar__palco { max-height: 34vh; } }
+.tela--ouvir .botao-falar { position: sticky; bottom: calc(env(safe-area-inset-bottom) + 8px); z-index: 5; box-shadow: 0 6px 18px rgba(17, 24, 39, .25); }
+/* motor de transcrição */
+.motor { background: #fff; border: 2px solid var(--borda); border-radius: 12px; padding: 8px 12px; }
+.motor summary { cursor: pointer; font-weight: 700; color: var(--azul); min-height: 32px; display: flex; align-items: center; }
+.motor__opcao { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; font-size: .95rem; }
+.motor__opcao input { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; }
+.tela--culto .motor { background: #111; border-color: #333; color: #e5e7eb; }
+.tela--culto .motor summary { color: #fff; }
+.culto__estado, .culto__dica { color: #cbd5e1; margin: 0; }
+/* culto em tela cheia simulada (iPhone) */
+.tela--culto-cheia { position: fixed; inset: 0; z-index: 50; background: #000; padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 12px); overflow: auto; }
+/* convite de instalação */
+.instalar { display: flex; gap: 12px; align-items: flex-start; background: #eef2fb; border: 2px solid var(--azul); border-radius: 16px; padding: 12px 14px; }
+.instalar img { border-radius: 12px; flex-shrink: 0; }
+.instalar p { margin: 4px 0 8px; font-size: .95rem; }
+.instalar__acoes { display: flex; gap: 8px; flex-wrap: wrap; }

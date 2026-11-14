@@ -35,7 +35,13 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
   return (
     <div className={`avatar ${compacto ? 'avatar--compacto' : ''}`}>
       <div ref={ref} className="avatar__palco" aria-label="Avatar sinalizando em Libras" />
-      {estado === 'carregando' && <div className="avatar__aviso">Carregando avatar de Libras…</div>}
+      {estado === 'carregando' && (
+        <div className="avatar__aviso avatar__aviso--cobre">
+          <span className="girando" aria-hidden />
+          Carregando avatar de Libras…
+          <small>Na primeira vez baixa cerca de 14 MB</small>
+        </div>
+      )}
       {estado === 'erro' && (
         <div className="avatar__aviso">Não foi possível carregar o avatar. A legenda continua funcionando.</div>
       )}

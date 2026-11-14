@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react'
-import { Culto } from './screens/Culto'
-import { Ensinar } from './screens/Ensinar'
-import { Ouvir } from './screens/Ouvir'
-import { Sinais } from './screens/Sinais'
-import { Sobre } from './screens/Sobre'
-import { Sugestoes } from './screens/Sugestoes'
-import { Termo } from './screens/Termo'
-import { Ver } from './screens/Ver'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { InstalarApp } from './components/InstalarApp'
+
+// cada tela é baixada só quando aberta: a tela inicial abre mais rápido em celular simples
+const Culto = lazy(() => import('./screens/Culto').then((m) => ({ default: m.Culto })))
+const Ensinar = lazy(() => import('./screens/Ensinar').then((m) => ({ default: m.Ensinar })))
+const Ouvir = lazy(() => import('./screens/Ouvir').then((m) => ({ default: m.Ouvir })))
+const Sinais = lazy(() => import('./screens/Sinais').then((m) => ({ default: m.Sinais })))
+const Sobre = lazy(() => import('./screens/Sobre').then((m) => ({ default: m.Sobre })))
+const Sugestoes = lazy(() => import('./screens/Sugestoes').then((m) => ({ default: m.Sugestoes })))
+const Termo = lazy(() => import('./screens/Termo').then((m) => ({ default: m.Termo })))
+const Ver = lazy(() => import('./screens/Ver').then((m) => ({ default: m.Ver })))
 
 export type Rota = 'inicio' | 'ouvir' | 'ver' | 'culto' | 'ensinar' | 'sinais' | 'sugestoes' | 'termo' | 'sobre'
 
@@ -16,7 +19,7 @@ const TITULOS: Record<Rota, string> = {
   ver: 'Surdo sinaliza → voz',
   culto: 'Modo culto',
   ensinar: 'Ensinar sinais',
-  sinais: 'Sinais: o que temos e o que falta',
+  sinais: 'Sinais',
   sugestoes: 'Sugestões',
   termo: 'Termo de consentimento',
   sobre: 'Sobre o Sinalume',
@@ -43,7 +46,7 @@ export default function App() {
     <div className={`app app--${rota}`}>
       <header className="topo">
         {rota === 'inicio' ? (
-          <img src="./sinalume-logo-branco.svg" alt="Sinalume" className="topo__logo" />
+          <img src="./sinalume-logo-branco.svg" alt="Sinalume" className="topo__logo" width={150} height={40} />
         ) : (
           <>
             <button type="button" className="topo__voltar" onClick={() => ir('inicio')} aria-label="Voltar ao início">
@@ -54,6 +57,7 @@ export default function App() {
         )}
       </header>
       <main>
+        <Suspense fallback={<p className="carregando-tela">Carregando…</p>}>
         {rota === 'inicio' && <Inicio ir={ir} />}
         {rota === 'ouvir' && <Ouvir />}
         {rota === 'ver' && <Ver ir={ir} />}
@@ -63,6 +67,7 @@ export default function App() {
         {rota === 'sugestoes' && <Sugestoes />}
         {rota === 'termo' && <Termo />}
         {rota === 'sobre' && <Sobre />}
+        </Suspense>
       </main>
     </div>
   )
@@ -72,6 +77,7 @@ function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void
   return (
     <div className="tela tela--inicio">
       <p className="inicio__chamada">Conversa entre surdos e ouvintes, de graça e no seu celular.</p>
+      <InstalarApp />
       <button type="button" className="cartao cartao--ver" onClick={() => ir('ver')}>
         <span className="cartao__icone" aria-hidden>🤟</span>
         <span>

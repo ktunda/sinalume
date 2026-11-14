@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Avatar } from '../components/Avatar'
+import { SeletorMotor } from '../components/SeletorMotor'
 import { sinalizar } from '../lib/vlibras'
 import { escutar, falaSuportada } from '../lib/voz'
 
@@ -10,6 +11,7 @@ export function Ouvir() {
   const [ouvindo, setOuvindo] = useState(false)
   const [erro, setErro] = useState('')
   const [digitado, setDigitado] = useState('')
+  const [estado, setEstado] = useState('')
   const parar = useRef<() => void>(() => {})
 
   const enviar = (texto: string) => {
@@ -28,6 +30,7 @@ export function Ouvir() {
         enviar(t)
       },
       aoErro: setErro,
+      aoEstado: setEstado,
       aoTerminar: () => setOuvindo(false),
     })
   }
@@ -50,6 +53,7 @@ export function Ouvir() {
         {parcial && <p className="legenda__parcial">{parcial}</p>}
       </div>
 
+      {estado && <p className="nota">{estado}</p>}
       {erro && <p className="erro">{erro}</p>}
 
       {falaSuportada() && (
@@ -64,6 +68,8 @@ export function Ouvir() {
           {ouvindo ? '🎤 Ouvindo… solte para enviar' : '🎤 Segure para falar'}
         </button>
       )}
+
+      <SeletorMotor />
 
       <form
         className="digitar"
