@@ -6,3 +6,5 @@ public/mediapipe
 .DS_Store
 public/acervo
 vercel-public
+__pycache__/
+.importar/
