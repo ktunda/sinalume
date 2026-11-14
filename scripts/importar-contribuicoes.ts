@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { caminhoDoEnvio, RE_ID } from '../api/_lib/contribuicao'
 import { criarPacote, lerPacote } from '../src/lib/pacote'
 import { consentimentoValido, registroConsentimento } from '../src/lib/termo'
+import { cabecalhosAutomacao } from './token-github'
 
 const API = (process.env.API_SINALUME ?? '').replace(/\/$/, '')
 const MAX = Number(process.env.MAX_POR_EXECUCAO ?? 10)
@@ -20,7 +21,8 @@ const jaFeitos = new Set(
     .filter(Boolean),
 )
 
-const r = await fetch(`${API}/api/pendentes`)
+const auth = await cabecalhosAutomacao()
+const r = await fetch(`${API}/api/pendentes`, { headers: auth })
 if (!r.ok) {
   console.error(`Falha ao listar contribuições: ${r.status}`)
   process.exit(1)
@@ -34,12 +36,13 @@ for (const { id } of contribuicoes) {
   if (!RE_ID.test(id) || jaFeitos.has(`contribuicao/${id}`)) continue
   if (existsSync(`acervo/${caminhoDoEnvio(id)}`)) continue
 
-  const resp = await fetch(`${API}/api/pendentes?id=${id}`)
+  const resp = await fetch(`${API}/api/pendentes?id=${id}`, { headers: auth })
   if (!resp.ok) {
     console.error(`[${id}] não baixou: ${resp.status}`)
     continue
   }
-  const dado = (await resp.json()) as { recebidoEm?: string; consentimento?: unknown }
+  const dado = (await resp.json()) as { recebidoEm?: string; consentimento?: unknown; remocaoHash?: unknown }
+  const remocaoHash = typeof dado.remocaoHash === 'string' && /^[0-9a-f]{64}$/.test(dado.remocaoHash) ? dado.remocaoHash : undefined
   const c = dado.consentimento
   if (!consentimentoValido(c)) {
     console.error(`[${id}] sem consentimento válido, ignorado`)
@@ -53,7 +56,7 @@ for (const { id } of contribuicoes) {
   }
   // regrava a partir dos dados validados (nada do arquivo original passa direto para o repositório)
   const pacote = criarPacote(lido.exemplos, { origem: 'Sinalume — voluntários', licenca: 'CC-BY-4.0' })
-  writeFileSync(`.importar/${id}.json`, JSON.stringify({ ...pacote, id, recebidoEm: dado.recebidoEm, consentimento: registro }))
+  writeFileSync(`.importar/${id}.json`, JSON.stringify({ ...pacote, id, recebidoEm: dado.recebidoEm, consentimento: registro, ...(remocaoHash ? { remocaoHash } : {}) }))
 
   const conta = new Map<string, number>()
   lido.exemplos.forEach((e) => conta.set(e.glosa, (conta.get(e.glosa) ?? 0) + 1))

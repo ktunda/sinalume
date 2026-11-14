@@ -72,6 +72,8 @@ export interface RegistroEnvio {
   id: string
   em: string
   exemplos: number
+  /** chave secreta de remoção (só este celular a conhece) */
+  chave?: string
 }
 
 const CHAVE_ENVIOS = 'sinalume:envios'
@@ -79,7 +81,8 @@ const CHAVE_ENVIOS = 'sinalume:envios'
 /** Códigos dos envios feitos neste celular (servem para pedir remoção depois). */
 export function meusEnvios(): RegistroEnvio[] {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE_ENVIOS) ?? '[]') as RegistroEnvio[]
+    const lista = JSON.parse(localStorage.getItem(CHAVE_ENVIOS) ?? '[]') as unknown
+    return Array.isArray(lista) ? (lista.filter((e) => e && typeof e.id === 'string') as RegistroEnvio[]) : []
   } catch {
     return []
   }
@@ -123,10 +126,10 @@ export async function enviarContribuicao(dados: DadosEnvio): Promise<ResultadoEn
     } catch {
       throw new Error('Sem conexão com a base da comunidade. Suas gravações continuam salvas; tente mais tarde.')
     }
-    const corpo = (await r.json().catch(() => ({}))) as { erro?: string; id?: string }
+    const corpo = (await r.json().catch(() => ({}))) as { erro?: string; id?: string; chave?: string }
     if (!r.ok) throw new Error(corpo.erro ?? `Falha no envio (${r.status}). Tente mais tarde.`)
     pedido = corpo.id
-    if (corpo.id) registrarEnvio({ id: corpo.id, em: new Date().toISOString(), exemplos: lote.length })
+    if (corpo.id) registrarEnvio({ id: corpo.id, em: new Date().toISOString(), exemplos: lote.length, chave: corpo.chave })
     await marcarEnviados(lote.map((e) => e.id))
   }
   return { enviados: pendentes.length, pedido }

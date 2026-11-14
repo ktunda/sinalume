@@ -138,7 +138,10 @@ export function Comunidade({ aoMudar }: { aoMudar?: () => void }) {
       {envios.length > 0 && (
         <details className="comunidade__envios">
           <summary>Meus envios ({envios.length})</summary>
-          <p className="nota">Guarde estes códigos: eles servem para pedir a remoção na aba Sugestões.</p>
+          <p className="nota">
+            O código e a chave servem para pedir a remoção na aba Sugestões. A chave é secreta: só este celular a
+            conhece. Anote-a se for trocar de aparelho.
+          </p>
           <ul>
             {envios
               .slice()
@@ -146,6 +149,12 @@ export function Comunidade({ aoMudar }: { aoMudar?: () => void }) {
               .map((e) => (
                 <li key={e.id}>
                   <code>{e.id}</code> · {e.exemplos} gravações · {new Date(e.em).toLocaleDateString('pt-BR')}
+                  {e.chave && (
+                    <>
+                      <br />
+                      Chave: <code className="chave">{e.chave}</code>
+                    </>
+                  )}
                 </li>
               ))}
           </ul>

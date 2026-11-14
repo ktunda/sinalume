@@ -2,6 +2,25 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Política de segurança de conteúdo: o app só fala com os serviços que usa de verdade.
+// 'unsafe-eval' e blob: são exigidos pelo player Unity do VLibras (2018) e pelo WebAssembly do MediaPipe.
+function politicaSeguranca(apiBase: string) {
+  const api = new URL(apiBase).origin
+  return [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob:",
+    "worker-src 'self' blob:",
+    `connect-src 'self' blob: data: ${api} https://traducao2.vlibras.gov.br https://dicionario2.vlibras.gov.br https://storage.googleapis.com https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co`,
+    "img-src 'self' data: blob:",
+    "media-src 'self' blob: mediastream:",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+}
+
 // base relativa: funciona em https://<usuario>.github.io/sinalume/ sem configuração extra
 export default defineConfig({
   base: './',
@@ -10,6 +29,20 @@ export default defineConfig({
   worker: { format: 'es' },
   plugins: [
     react(),
+    {
+      name: 'sinalume-seguranca',
+      transformIndexHtml: () => [
+        {
+          tag: 'meta',
+          attrs: {
+            'http-equiv': 'Content-Security-Policy',
+            content: politicaSeguranca(process.env.VITE_API_BASE || 'https://sinalume.vercel.app'),
+          },
+          injectTo: 'head-prepend',
+        },
+        { tag: 'meta', attrs: { name: 'referrer', content: 'strict-origin-when-cross-origin' }, injectTo: 'head-prepend' },
+      ],
+    },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'sinalume-logo.svg', 'sinalume-logo-branco.svg'],
@@ -71,8 +104,8 @@ export default defineConfig({
             },
           },
           {
-            // dicionário de sinais do VLibras: reaproveita sinais já baixados
-            urlPattern: /^https:\/\/(www\.)?vlibras\.gov\.br\/dict.*/,
+            // dicionário de sinais do VLibras: reaproveita sinais já baixados (economiza dados)
+            urlPattern: /^https:\/\/dicionario2\.vlibras\.gov\.br\/.*/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'vlibras-dicionario',

@@ -33,7 +33,13 @@ export function useCameraMaos(aoQuadro: (q: QuadroMaos) => void, opcoes = { tras
           video: { facingMode: traseira ? 'environment' : 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false,
         })
-        const video = videoRef.current!
+        // a tela pode ter sido fechada enquanto o navegador pedia permissão: desliga a câmera na hora
+        if (parar) {
+          stream.getTracks().forEach((t) => t.stop())
+          return
+        }
+        const video = videoRef.current
+        if (!video) return
         video.srcObject = stream
         await video.play()
         const detector = await carregarDetector()
@@ -62,6 +68,7 @@ export function useCameraMaos(aoQuadro: (q: QuadroMaos) => void, opcoes = { tras
         }
         loop()
       } catch (e) {
+        if (parar) return
         setEstado('erro')
         const nome = (e as Error).name
         setErro(

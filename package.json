@@ -20,6 +20,7 @@
     "@mediapipe/tasks-vision": "^1.2.3",
     "@vercel/blob": "^2.9.0",
     "idb-keyval": "^6.3.0",
+    "jose": "^6.2.17",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "vlibras-player-webjs": "^2.4.2"
@@ -36,5 +37,8 @@
     "vite-plugin-pwa": "^2.0.0"
   },
   "description": "Sinalume: tradução gratuita e de código aberto entre Libras e português",
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "overrides": {
+    "zod": "^4.6.7"
+  }
 }

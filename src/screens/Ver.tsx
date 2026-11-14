@@ -27,7 +27,13 @@ export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: bo
   const recarregar = () => carregarExemplos().then((ex) => setClassificador(new ClassificadorDTW(ex)))
   useEffect(() => {
     recarregar()
+    // ao sair da tela, não fala uma frase antiga depois
+    return () => window.clearTimeout(timerFrase.current)
   }, [])
+  const mudarFrase = (f: (g: string[]) => string[]) => {
+    window.clearTimeout(timerFrase.current)
+    setGlosas(f)
+  }
   const baixar = async () => {
     setBaixando(true)
     setErroAcervo('')
@@ -117,12 +123,12 @@ export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: bo
         </button>
         <button
           type="button"
-          onClick={() => setGlosas((g) => g.slice(0, -1))}
+          onClick={() => mudarFrase((g) => g.slice(0, -1))}
           disabled={glosas.length === 0}
         >
           ⌫ Apagar sinal
         </button>
-        <button type="button" onClick={() => setGlosas([])} disabled={glosas.length === 0}>
+        <button type="button" onClick={() => mudarFrase(() => [])} disabled={glosas.length === 0}>
           Nova frase
         </button>
         <label className="alternador">

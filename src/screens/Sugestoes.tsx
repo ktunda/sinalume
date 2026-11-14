@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { API_BASE, meusEnvios } from '../lib/comunidade'
+import { ehAndroid, ehIOS } from '../lib/plataforma'
 
 const TIPOS = [
   { valor: 'melhoria', rotulo: '💡 Ideia de melhoria' },
@@ -15,6 +16,9 @@ export function Sugestoes() {
   const [texto, setTexto] = useState('')
   const envios = meusEnvios()
   const [codigo, setCodigo] = useState(envios.at(-1)?.id ?? '')
+  const [chaveDigitada, setChaveDigitada] = useState('')
+  const chaveSalva = envios.find((e) => e.id === codigo)?.chave
+  const chave = chaveSalva ?? chaveDigitada.trim().toLowerCase()
   const [estado, setEstado] = useState<'livre' | 'enviando' | 'ok' | 'erro'>('livre')
   const [mensagem, setMensagem] = useState('')
 
@@ -26,7 +30,12 @@ export function Sugestoes() {
       const r = await fetch(`${API_BASE}/api/sugestao`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo, texto, codigoEnvio: tipo === 'remocao' ? codigo : undefined, tela: navigator.userAgent.includes('Android') ? 'android' : 'outro' }),
+        body: JSON.stringify({
+          tipo,
+          texto,
+          ...(tipo === 'remocao' ? { codigoEnvio: codigo, chave: chave || undefined } : {}),
+          tela: ehAndroid() ? 'android' : ehIOS() ? 'ios' : 'outro',
+        }),
       })
       const corpo = (await r.json().catch(() => ({}))) as { erro?: string; id?: string }
       if (!r.ok) throw new Error(corpo.erro ?? `Falha no envio (${r.status}).`)
@@ -76,6 +85,20 @@ export function Sugestoes() {
           ) : (
             <input value={codigo} onChange={(e) => setCodigo(e.target.value.trim())} placeholder="ex.: 2026-11-14-a1b2c3d4" />
           )}
+        </label>
+      )}
+      {tipo === 'remocao' && !chaveSalva && (
+        <label className="sugestoes__campo">
+          Chave de remoção (se você anotou)
+          <input
+            value={chaveDigitada}
+            onChange={(e) => setChaveDigitada(e.target.value)}
+            maxLength={32}
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="32 letras e números"
+          />
+          <span className="nota">Sem a chave, a equipe vai confirmar com você antes de remover.</span>
         </label>
       )}
 

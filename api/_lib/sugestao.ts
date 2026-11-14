@@ -1,6 +1,6 @@
 // Sugestões de melhoria, avisos de erro e pedidos de remoção enviados pelo app.
 // Ficam guardados no Vercel Blob; a automação do GitHub transforma cada um em uma "issue" pública.
-import type { Resposta, Salvar } from './contribuicao.js'
+import { RE_CHAVE, resumoChave, type Resposta, type Salvar } from './contribuicao.js'
 
 export const TIPOS_SUGESTAO = {
   melhoria: 'Ideia de melhoria',
@@ -23,6 +23,8 @@ export interface Sugestao {
   tipo: TipoSugestao
   texto: string
   codigoEnvio?: string
+  /** SHA-256 da chave de remoção informada (a chave em si nunca é guardada) */
+  chaveHash?: string
   tela?: string
   recebidoEm: string
 }
@@ -32,26 +34,34 @@ export function limparTexto(t: string, max = 2000): string {
   return t
     // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
-    .replace(/@/g, '@​')
+    .replace(/@/g, '@\u200b')
+    // vira texto puro no GitHub: sem HTML, imagens ou links escondidos
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/!\[/g, '!\u200b[')
     .trim()
     .slice(0, max)
 }
 
 export async function processarSugestao(textoCorpo: string, salvar: Salvar, agora = new Date()): Promise<Resposta> {
   if (textoCorpo.length > 10_000) return { status: 413, corpo: { erro: 'Mensagem grande demais.' } }
-  let c: { tipo?: unknown; texto?: unknown; codigoEnvio?: unknown; tela?: unknown }
+  let c: { tipo?: unknown; texto?: unknown; codigoEnvio?: unknown; chave?: unknown; tela?: unknown }
   try {
     c = JSON.parse(textoCorpo)
   } catch {
     return { status: 400, corpo: { erro: 'JSON inválido.' } }
   }
   const tipo = String(c.tipo) as TipoSugestao
-  if (!(tipo in TIPOS_SUGESTAO)) return { status: 422, corpo: { erro: 'Tipo de sugestão inválido.' } }
+  if (!Object.hasOwn(TIPOS_SUGESTAO, tipo)) return { status: 422, corpo: { erro: 'Tipo de sugestão inválido.' } }
   const texto = typeof c.texto === 'string' ? limparTexto(c.texto) : ''
   const codigoEnvio = typeof c.codigoEnvio === 'string' ? c.codigoEnvio.trim() : ''
+  const chave = typeof c.chave === 'string' ? c.chave.trim().toLowerCase() : ''
   if (tipo === 'remocao') {
     if (!RE_CODIGO_ENVIO.test(codigoEnvio)) {
       return { status: 422, corpo: { erro: 'Informe o código do envio (aparece em "Meus envios").' } }
+    }
+    if (chave && !RE_CHAVE.test(chave)) {
+      return { status: 422, corpo: { erro: 'A chave de remoção tem 32 letras e números (aparece em "Meus envios").' } }
     }
   } else if (texto.length < 5) {
     return { status: 422, corpo: { erro: 'Escreva um pouco mais sobre a sua sugestão.' } }
@@ -61,7 +71,8 @@ export async function processarSugestao(textoCorpo: string, salvar: Salvar, agor
     id,
     tipo,
     texto,
-    ...(codigoEnvio && RE_CODIGO_ENVIO.test(codigoEnvio) ? { codigoEnvio } : {}),
+    ...(tipo === 'remocao' ? { codigoEnvio } : {}),
+    ...(tipo === 'remocao' && chave ? { chaveHash: await resumoChave(chave) } : {}),
     ...(typeof c.tela === 'string' ? { tela: limparTexto(c.tela, 40) } : {}),
     recebidoEm: agora.toISOString(),
   }

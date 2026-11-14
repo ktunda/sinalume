@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { Icone, type NomeIcone } from './components/Icone'
 import { InstalarApp } from './components/InstalarApp'
 
 // cada tela é baixada só quando aberta: a tela inicial abre mais rápido em celular simples
@@ -93,38 +94,43 @@ export default function App() {
 }
 
 function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void }) {
+  const principais: { rota: Rota; icone: NomeIcone; titulo: string; texto: string }[] = [
+    { rota: 'ver', icone: 'maos', titulo: 'Surdo sinaliza', texto: 'Aponte a câmera: os sinais viram texto e voz' },
+    { rota: 'ouvir', icone: 'fala', titulo: 'Ouvinte fala', texto: 'A fala vira legenda e Libras no avatar' },
+    { rota: 'culto', icone: 'igreja', titulo: 'Modo culto', texto: 'Pregação em Libras no telão, nos dois sentidos' },
+  ]
+  const outros: { rota: Rota; icone: NomeIcone; titulo: string }[] = [
+    { rota: 'ensinar', icone: 'gravar', titulo: 'Ensinar sinais' },
+    { rota: 'sinais', icone: 'lista', titulo: 'Sinais que temos' },
+    { rota: 'sugestoes', icone: 'ideia', titulo: 'Sugestões' },
+    { rota: 'ajuda', icone: 'livro', titulo: 'Manual' },
+    { rota: 'sobre', icone: 'escudo', titulo: 'Sobre e privacidade' },
+  ]
   return (
     <div className="tela tela--inicio">
       <p className="inicio__chamada">Conversa entre surdos e ouvintes, de graça e no seu celular.</p>
-      <button type="button" className="cartao cartao--ver" onClick={() => ir('ver')}>
-        <span className="cartao__icone" aria-hidden>🤟</span>
-        <span>
-          <strong>Surdo sinaliza</strong>
-          <small>Aponte a câmera: os sinais viram texto e voz</small>
-        </span>
-      </button>
-      <button type="button" className="cartao cartao--ouvir" onClick={() => ir('ouvir')}>
-        <span className="cartao__icone" aria-hidden>🗣️</span>
-        <span>
-          <strong>Ouvinte fala</strong>
-          <small>A fala vira legenda e Libras no avatar</small>
-        </span>
-      </button>
-      <button type="button" className="cartao cartao--culto" onClick={() => ir('culto')}>
-        <span className="cartao__icone" aria-hidden>⛪</span>
-        <span>
-          <strong>Modo culto</strong>
-          <small>Legenda grande e Libras no projetor</small>
-        </span>
-      </button>
+      {principais.map((c) => (
+        <button key={c.rota} type="button" className={`cartao cartao--${c.rota}`} onClick={() => ir(c.rota)}>
+          <span className="cartao__icone">
+            <Icone nome={c.icone} tamanho={30} />
+          </span>
+          <span className="cartao__texto">
+            <strong>{c.titulo}</strong>
+            <small>{c.texto}</small>
+          </span>
+          <Icone nome="seta" className="cartao__seta" />
+        </button>
+      ))}
       <InstalarApp />
-      <div className="inicio__secundarios">
-        <button type="button" onClick={() => ir('ensinar')}>✋ Ensinar sinais</button>
-        <button type="button" onClick={() => ir('sinais')}>📋 Sinais que temos</button>
-        <button type="button" onClick={() => ir('sugestoes')}>💡 Sugestões</button>
-        <button type="button" onClick={() => ir('ajuda')}>📖 Manual</button>
-        <button type="button" onClick={() => ir('sobre')}>ℹ️ Sobre e privacidade</button>
-      </div>
+      <nav className="inicio__outros" aria-label="Mais opções">
+        {outros.map((o) => (
+          <button key={o.rota} type="button" onClick={() => ir(o.rota)}>
+            <Icone nome={o.icone} />
+            <span>{o.titulo}</span>
+            <Icone nome="seta" className="inicio__seta" />
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }

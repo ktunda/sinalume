@@ -183,7 +183,7 @@ P.append(pagina(7, 'Privacidade', f'''
 </ul>
 <p>Cada envio registra a versão do termo e a data do aceite. Apelido e estado são opcionais; nome completo, telefone, e-mail e endereço não são pedidos.</p>
 <h2>Direito de remoção</h2>
-<p>Depois de enviar, o app mostra um código do envio. Com ele, a pessoa pede a remoção na aba Sugestões, e as gravações saem do acervo. Cópias já baixadas por terceiros sob a licença aberta não podem ser recolhidas.</p>
+<p>Cada envio recebe um código e uma <b>chave secreta de remoção</b>, que só o celular de quem enviou conhece. Com eles, a pessoa pede a remoção na aba Sugestões, e as gravações saem do acervo. A chave impede que outra pessoa peça a remoção no lugar dela. Cópias já baixadas por terceiros sob a licença aberta não podem ser recolhidas.</p>
 <div class="nota"><p>O Sinalume reconhece um vocabulário limitado e pode errar. Em consultas médicas, assuntos jurídicos e outras situações importantes, procure um intérprete de Libras.</p></div>'''))
 
 # 8 gratuito + evolução

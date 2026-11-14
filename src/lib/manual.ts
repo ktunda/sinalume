@@ -122,7 +122,7 @@ export const MANUAL: SecaoManual[] = [
       'Faça o sinal com boa luz, mãos e rosto aparecendo, e abaixe as mãos no fim.',
       'Repita 5 vezes. O app avisa a cada gravação.',
       'Toque em "Enviar minhas gravações", leia o Termo de consentimento, marque as duas confirmações e envie.',
-      'Guarde o código do envio, que aparece em "Meus envios".',
+      'Em "Meus envios" aparecem o código e a chave secreta de remoção de cada envio. Anote a chave se for trocar de celular.',
     ],
     dicas: [
       '"Exportar sinais" gera um arquivo para trocar sinais sem internet; "Importar pacote" recebe.',
@@ -149,7 +149,7 @@ export const MANUAL: SecaoManual[] = [
     resumo: 'Para mandar ideias, avisar de erros, pedir sinais ou pedir a remoção das suas gravações. Sem conta.',
     passos: [
       'Escolha o assunto: ideia, erro, sinal, remoção ou outro.',
-      'Escreva a mensagem (para remoção, escolha o código do envio) e toque em Enviar.',
+      'Escreva a mensagem e toque em Enviar. Para remoção, escolha o código do envio: neste celular a chave secreta vai junto; em outro aparelho, digite a chave anotada.',
       'Guarde o protocolo. Acompanhe em github.com/ktunda/sinalume/issues.',
     ],
     dicas: ['As mensagens ficam públicas: não escreva nome completo, telefone ou e-mail.'],

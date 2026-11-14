@@ -87,10 +87,15 @@ export function Ensinar() {
     a.href = URL.createObjectURL(blob)
     a.download = `sinalume-sinais-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
-    URL.revokeObjectURL(a.href)
+    // no iPhone o download começa depois do clique: libera o arquivo só um pouco depois
+    window.setTimeout(() => URL.revokeObjectURL(a.href), 30_000)
   }
 
   const importar = async (arquivo: File) => {
+    if (arquivo.size > 30_000_000) {
+      setMensagem('Arquivo grande demais (máximo 30 MB).')
+      return
+    }
     try {
       const n = await importarPacote(await arquivo.text())
       setMensagem(`${n} exemplos importados.`)
@@ -141,7 +146,7 @@ export function Ensinar() {
         <input
           value={nova}
           onChange={(e) => setNova(e.target.value)}
-          placeholder="Digite qualquer sinal (ex.: célula de jovens)"
+          placeholder="Digite um sinal"
           aria-label="Digite o sinal que vai gravar ou busque na lista"
         />
         <button type="submit">Gravar</button>
@@ -160,7 +165,11 @@ export function Ensinar() {
           type="file"
           accept="application/json,.json"
           hidden
-          onChange={(e) => e.target.files?.[0] && importar(e.target.files[0])}
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            e.target.value = '' // permite importar o mesmo arquivo de novo
+            if (f) importar(f)
+          }}
         />
       </div>
 

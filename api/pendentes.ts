@@ -2,16 +2,20 @@
 //   GET /api/pendentes                      contribuições de sinais
 //   GET /api/pendentes?colecao=sugestoes    sugestões e pedidos de remoção
 //   GET /api/pendentes?id=...               conteúdo de um item
-// Os dados são abertos: pontos das mãos (CC BY 4.0) e textos que viram issues públicas. Sem IP nem contato.
+// Só a automação oficial do GitHub (token OIDC do repositório ktunda/sinalume, ramo main) pode ler:
+// o que chega ainda não foi revisado e pode conter algo que não deve ficar público.
 import { get, list } from '@vercel/blob'
+import { conferirAutomacao } from './_lib/auth.js'
 import { caminhoDoEnvio, RE_ID } from './_lib/contribuicao.js'
-import { ACESSO_BLOB, cors, json } from './_lib/http.js'
+import { ACESSO_BLOB, json } from './_lib/http.js'
 import { caminhoDaSugestao, RE_ID_SUGESTAO } from './_lib/sugestao.js'
 
 const DIAS = 45 // os arquivos se apagam sozinhos no Blob após 60 dias (ttlDays)
 
 export async function GET(req: Request) {
-  const c = cors(req.headers.get('origin'), 'GET, OPTIONS')
+  const c = { 'Cache-Control': 'no-store' }
+  const recusa = await conferirAutomacao(req.headers.get('authorization'))
+  if (recusa) return json(401, { erro: 'Acesso restrito à automação do projeto.' }, c)
   const url = new URL(req.url)
   const id = url.searchParams.get('id')
 
@@ -40,5 +44,5 @@ export async function GET(req: Request) {
     cursor = pagina.hasMore ? pagina.cursor : undefined
   } while (cursor)
   itens.sort((a, b) => a.recebidoEm.localeCompare(b.recebidoEm))
-  return json(200, sugestoes ? { sugestoes: itens } : { contribuicoes: itens }, { ...c, 'Cache-Control': 'no-store' })
+  return json(200, sugestoes ? { sugestoes: itens } : { contribuicoes: itens }, c)
 }

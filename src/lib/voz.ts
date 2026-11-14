@@ -206,7 +206,11 @@ function escutarNoAparelho(op: OpcoesEscuta): () => void {
       if (!(await modeloJaPreparado())) op.aoEstado?.('Preparando a transcrição no aparelho…')
       const prep = prepararModelo()
       stream = await abrirMicrofone()
-      if (!ativo) return
+      if (!ativo) {
+        // parou enquanto o navegador pedia permissão: desliga o microfone na hora
+        stream.getTracks().forEach((t) => t.stop())
+        return
+      }
       if (op.continuo) {
         await prep
         op.aoEstado?.('')

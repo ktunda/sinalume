@@ -16,6 +16,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  id-token: write # token OIDC de curta duração para ler /api/pendentes (sem senha guardada)
 
 concurrency:
   group: importar-contribuicoes

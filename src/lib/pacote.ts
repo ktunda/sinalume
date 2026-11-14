@@ -52,6 +52,16 @@ export function normalizarGlosa(g: string): string {
   return g.normalize('NFC').trim().toUpperCase().replace(/[\s_]+/g, '-')
 }
 
+/** Apelido vira texto simples: só letras, números, espaço e . - ' (sem links, marcações ou menções). */
+export function limparAutor(a: string): string {
+  return a
+    .normalize('NFC')
+    .replace(/[^\p{L}\p{N} .'-]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, LIMITES.tamanhoAutor)
+}
+
 export function glosaValida(g: string): boolean {
   return g.length > 0 && g.length <= LIMITES.tamanhoGlosa && RE_GLOSA.test(g)
 }
@@ -131,7 +141,7 @@ export function lerPacote(dado: unknown, opcoes: { maxExemplos?: number } = {}):
       erros.push(`${onde} (${glosa}): nenhuma mão detectada`)
       return
     }
-    const autor = typeof e.autor === 'string' ? e.autor.trim().slice(0, LIMITES.tamanhoAutor) : undefined
+    const autor = typeof e.autor === 'string' ? limparAutor(e.autor) : undefined
     const uf = typeof e.uf === 'string' && (UFS as readonly string[]).includes(e.uf) ? (e.uf as UF) : undefined
     exemplos.push({ glosa, quadros, ...(autor ? { autor } : {}), ...(uf ? { uf } : {}) })
   })

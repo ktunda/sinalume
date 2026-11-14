@@ -10,12 +10,16 @@ export function Sobre() {
       <h2>Privacidade</h2>
       <ul>
         <li>O vídeo da câmera é processado só no seu celular e nunca é enviado.</li>
-        <li>Os sinais gravados ficam guardados só neste aparelho, até você exportar.</li>
         <li>
-          A fala é transcrita pelo serviço de voz do navegador (Google, no Chrome) e o texto vai para o VLibras para
-          virar Libras.
+          Os sinais gravados ficam só neste aparelho. Eles só saem se você exportar ou enviar à comunidade, com o seu
+          consentimento.
         </li>
-        <li>Não há cadastro, login nem rastreamento.</li>
+        <li>
+          A fala é transcrita pelo serviço de voz do navegador ou, se você escolher “No aparelho”, no próprio celular,
+          sem sair dele. O texto vai para o VLibras para virar Libras.
+        </li>
+        <li>Não há cadastro, login, anúncios nem rastreamento.</li>
+        <li>O app só se conecta aos serviços que usa (VLibras, modelos de reconhecimento e a base da comunidade).</li>
       </ul>
 
       <h2>Importante</h2>

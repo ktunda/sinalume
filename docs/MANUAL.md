@@ -111,7 +111,7 @@ Voluntários gravam sinais para o Sinalume aprender. Só os pontos das mãos sã
 2. Faça o sinal com boa luz, mãos e rosto aparecendo, e abaixe as mãos no fim.
 3. Repita 5 vezes. O app avisa a cada gravação.
 4. Toque em "Enviar minhas gravações", leia o Termo de consentimento, marque as duas confirmações e envie.
-5. Guarde o código do envio, que aparece em "Meus envios".
+5. Em "Meus envios" aparecem o código e a chave secreta de remoção de cada envio. Anote a chave se for trocar de celular.
 
 **Dicas**
 
@@ -137,7 +137,7 @@ Mostra o progresso do vocabulário: o que está pronto, o que precisa de mais pe
 Para mandar ideias, avisar de erros, pedir sinais ou pedir a remoção das suas gravações. Sem conta.
 
 1. Escolha o assunto: ideia, erro, sinal, remoção ou outro.
-2. Escreva a mensagem (para remoção, escolha o código do envio) e toque em Enviar.
+2. Escreva a mensagem e toque em Enviar. Para remoção, escolha o código do envio: neste celular a chave secreta vai junto; em outro aparelho, digite a chave anotada.
 3. Guarde o protocolo. Acompanhe em github.com/ktunda/sinalume/issues.
 
 **Dicas**
