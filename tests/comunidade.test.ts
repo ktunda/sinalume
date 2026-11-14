@@ -4,6 +4,8 @@ import { processarContribuicao, RE_ID } from '../api/_lib/contribuicao.ts'
 import { selecionarVariados, type ExemploComFonte } from '../scripts/acervo-comum.ts'
 import { codificar, decodificar } from '../src/lib/codec.ts'
 import { criarPacote, lerPacote } from '../src/lib/pacote.ts'
+import { novoConsentimento } from '../src/lib/termo.ts'
+import { processarSugestao } from '../api/_lib/sugestao.ts'
 
 // sinal sintético com mão presente (índice 65 = presença da mão direita)
 function quadros(semente: number): number[][] {
@@ -71,11 +73,17 @@ test('função de contribuição valida, recusa sem consentimento e guarda pacot
   assert.equal(sem.status, 400)
   assert.equal(salvos.length, 0, 'não deve guardar nada sem consentimento')
 
-  const lixo = await processarContribuicao(JSON.stringify({ consentimento: true, pacote: { formato: 'x' } }), salvar)
+  const antigo = await processarContribuicao(JSON.stringify({ consentimento: true, pacote }), salvar)
+  assert.equal(antigo.status, 400, 'consentimento sem termo/idade deve ser recusado')
+  const semIdade = { ...novoConsentimento(), maiorIdadeOuResponsavel: false }
+  assert.equal((await processarContribuicao(JSON.stringify({ consentimento: semIdade, pacote }), salvar)).status, 400)
+
+  const lixo = await processarContribuicao(JSON.stringify({ consentimento: novoConsentimento(), pacote: { formato: 'x' } }), salvar)
   assert.equal(lixo.status, 422)
 
   const agora = new Date('2026-11-14T12:00:00Z')
-  const r = await processarContribuicao(JSON.stringify({ consentimento: true, pacote }), salvar, agora)
+  const consentimento = { ...novoConsentimento(), extra: 'não deve ser guardado' }
+  const r = await processarContribuicao(JSON.stringify({ consentimento, pacote }), salvar, agora)
   assert.equal(r.status, 201)
   const id = String(r.corpo.id)
   assert.match(id, RE_ID)
@@ -84,4 +92,23 @@ test('função de contribuição valida, recusa sem consentimento e guarda pacot
   assert.equal(salvo.exemplos.length, 2)
   assert.equal(salvo.licenca, 'CC-BY-4.0')
   assert.equal(lerPacote(salvo).ok, true)
+  assert.equal(salvo.consentimento.versao, consentimento.versao)
+  assert.equal(salvo.consentimento.maiorIdadeOuResponsavel, true)
+  assert.equal(salvo.consentimento.extra, undefined)
+})
+
+test('sugestões: valida tipo, exige código na remoção e neutraliza menções', async () => {
+  const salvos: string[] = []
+  const salvar = async (_c: string, conteudo: string) => {
+    salvos.push(conteudo)
+  }
+  assert.equal((await processarSugestao(JSON.stringify({ tipo: 'hackear', texto: 'oi oi oi' }), salvar)).status, 422)
+  assert.equal((await processarSugestao(JSON.stringify({ tipo: 'melhoria', texto: 'oi' }), salvar)).status, 422)
+  assert.equal((await processarSugestao(JSON.stringify({ tipo: 'remocao', texto: '' }), salvar)).status, 422)
+  const ok = await processarSugestao(JSON.stringify({ tipo: 'melhoria', texto: 'Modo noturno, por favor @fulano' }), salvar)
+  assert.equal(ok.status, 201)
+  assert.ok(!JSON.parse(salvos[0]).texto.includes('@f'), 'menção deve ser neutralizada')
+  const rem = await processarSugestao(JSON.stringify({ tipo: 'remocao', codigoEnvio: '2026-11-14-a1b2c3d4' }), salvar)
+  assert.equal(rem.status, 201)
+  assert.equal(JSON.parse(salvos[1]).codigoEnvio, '2026-11-14-a1b2c3d4')
 })

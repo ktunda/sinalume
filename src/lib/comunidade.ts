@@ -3,6 +3,7 @@
 // - BAIXAR: depois de aprovado, o sinal entra no acervo público (publicado junto com o app) e todos recebem.
 import { carregarExemplos, marcarEnviados, pendentesDeEnvio, substituirComunidade } from './acervo'
 import { criarPacote, lerPacote, type UF } from './pacote'
+import { novoConsentimento } from './termo'
 import { type IndiceAcervo } from './comunidade-tipos'
 import { type Categoria } from './vocab'
 
@@ -61,7 +62,35 @@ export async function haAtualizacao(): Promise<boolean> {
 export interface DadosEnvio {
   apelido?: string
   uf?: UF
+  /** aceitou o termo de consentimento (versão atual) */
   consentimento: boolean
+  /** declarou ter 18+ anos ou ser responsável legal por quem gravou */
+  maiorIdadeOuResponsavel: boolean
+}
+
+export interface RegistroEnvio {
+  id: string
+  em: string
+  exemplos: number
+}
+
+const CHAVE_ENVIOS = 'sinalume:envios'
+
+/** Códigos dos envios feitos neste celular (servem para pedir remoção depois). */
+export function meusEnvios(): RegistroEnvio[] {
+  try {
+    return JSON.parse(localStorage.getItem(CHAVE_ENVIOS) ?? '[]') as RegistroEnvio[]
+  } catch {
+    return []
+  }
+}
+
+function registrarEnvio(r: RegistroEnvio) {
+  try {
+    localStorage.setItem(CHAVE_ENVIOS, JSON.stringify([...meusEnvios(), r].slice(-50)))
+  } catch {
+    /* ignore */
+  }
 }
 
 export interface ResultadoEnvio {
@@ -72,6 +101,8 @@ export interface ResultadoEnvio {
 /** Envia à comunidade as gravações deste celular que ainda não foram enviadas. */
 export async function enviarContribuicao(dados: DadosEnvio): Promise<ResultadoEnvio> {
   if (!dados.consentimento) throw new Error('É preciso concordar com o termo para enviar.')
+  if (!dados.maiorIdadeOuResponsavel) throw new Error('É preciso confirmar a idade ou a autorização do responsável.')
+  const consentimento = novoConsentimento()
   const pendentes = await pendentesDeEnvio()
   if (pendentes.length === 0) return { enviados: 0 }
   // envia em lotes para respeitar o limite da função
@@ -87,7 +118,7 @@ export async function enviarContribuicao(dados: DadosEnvio): Promise<ResultadoEn
       r = await fetch(API_CONTRIBUIR, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ consentimento: true, pacote }),
+        body: JSON.stringify({ consentimento, pacote }),
       })
     } catch {
       throw new Error('Sem conexão com a base da comunidade. Suas gravações continuam salvas; tente mais tarde.')
@@ -95,6 +126,7 @@ export async function enviarContribuicao(dados: DadosEnvio): Promise<ResultadoEn
     const corpo = (await r.json().catch(() => ({}))) as { erro?: string; id?: string }
     if (!r.ok) throw new Error(corpo.erro ?? `Falha no envio (${r.status}). Tente mais tarde.`)
     pedido = corpo.id
+    if (corpo.id) registrarEnvio({ id: corpo.id, em: new Date().toISOString(), exemplos: lote.length })
     await marcarEnviados(lote.map((e) => e.id))
   }
   return { enviados: pendentes.length, pedido }

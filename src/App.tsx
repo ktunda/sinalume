@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { Culto } from './screens/Culto'
 import { Ensinar } from './screens/Ensinar'
 import { Ouvir } from './screens/Ouvir'
+import { Sinais } from './screens/Sinais'
 import { Sobre } from './screens/Sobre'
+import { Sugestoes } from './screens/Sugestoes'
+import { Termo } from './screens/Termo'
 import { Ver } from './screens/Ver'
 
-export type Rota = 'inicio' | 'ouvir' | 'ver' | 'culto' | 'ensinar' | 'sobre'
+export type Rota = 'inicio' | 'ouvir' | 'ver' | 'culto' | 'ensinar' | 'sinais' | 'sugestoes' | 'termo' | 'sobre'
 
 const TITULOS: Record<Rota, string> = {
   inicio: 'Sinalume',
@@ -13,11 +16,14 @@ const TITULOS: Record<Rota, string> = {
   ver: 'Surdo sinaliza → voz',
   culto: 'Modo culto',
   ensinar: 'Ensinar sinais',
+  sinais: 'Sinais: o que temos e o que falta',
+  sugestoes: 'Sugestões',
+  termo: 'Termo de consentimento',
   sobre: 'Sobre o Sinalume',
 }
 
 const lerRota = (): Rota => {
-  const r = location.hash.replace('#/', '') as Rota
+  const r = location.hash.replace('#/', '').split('?')[0] as Rota
   return r in TITULOS ? r : 'inicio'
 }
 
@@ -28,8 +34,9 @@ export default function App() {
     window.addEventListener('hashchange', f)
     return () => window.removeEventListener('hashchange', f)
   }, [])
-  const ir = (r: Rota) => {
-    location.hash = r === 'inicio' ? '' : `#/${r}`
+  const ir = (r: Rota, params?: Record<string, string>) => {
+    const q = params ? `?${new URLSearchParams(params)}` : ''
+    location.hash = r === 'inicio' ? '' : `#/${r}${q}`
   }
 
   return (
@@ -51,14 +58,17 @@ export default function App() {
         {rota === 'ouvir' && <Ouvir />}
         {rota === 'ver' && <Ver ir={ir} />}
         {rota === 'culto' && <Culto />}
-        {rota === 'ensinar' && <Ensinar />}
+        {rota === 'ensinar' && <Ensinar key={location.hash} />}
+        {rota === 'sinais' && <Sinais ir={ir} />}
+        {rota === 'sugestoes' && <Sugestoes />}
+        {rota === 'termo' && <Termo />}
         {rota === 'sobre' && <Sobre />}
       </main>
     </div>
   )
 }
 
-function Inicio({ ir }: { ir: (r: Rota) => void }) {
+function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void }) {
   return (
     <div className="tela tela--inicio">
       <p className="inicio__chamada">Conversa entre surdos e ouvintes, de graça e no seu celular.</p>
@@ -85,6 +95,8 @@ function Inicio({ ir }: { ir: (r: Rota) => void }) {
       </button>
       <div className="inicio__secundarios">
         <button type="button" onClick={() => ir('ensinar')}>✋ Ensinar sinais</button>
+        <button type="button" onClick={() => ir('sinais')}>📋 Sinais que temos</button>
+        <button type="button" onClick={() => ir('sugestoes')}>💡 Sugestões</button>
         <button type="button" onClick={() => ir('sobre')}>ℹ️ Sobre e privacidade</button>
       </div>
     </div>

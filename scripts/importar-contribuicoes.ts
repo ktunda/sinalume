@@ -4,6 +4,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { caminhoDoEnvio, RE_ID } from '../api/_lib/contribuicao'
 import { criarPacote, lerPacote } from '../src/lib/pacote'
+import { consentimentoValido, registroConsentimento } from '../src/lib/termo'
 
 const API = (process.env.API_SINALUME ?? '').replace(/\/$/, '')
 const MAX = Number(process.env.MAX_POR_EXECUCAO ?? 10)
@@ -38,7 +39,13 @@ for (const { id } of contribuicoes) {
     console.error(`[${id}] não baixou: ${resp.status}`)
     continue
   }
-  const dado = (await resp.json()) as { recebidoEm?: string }
+  const dado = (await resp.json()) as { recebidoEm?: string; consentimento?: unknown }
+  const c = dado.consentimento
+  if (!consentimentoValido(c)) {
+    console.error(`[${id}] sem consentimento válido, ignorado`)
+    continue
+  }
+  const registro = registroConsentimento(c, dado.recebidoEm ?? '')
   const lido = lerPacote(dado, { maxExemplos: 250 })
   if (!lido.ok) {
     console.error(`[${id}] inválido, ignorado: ${lido.erros[0]}`)
@@ -46,7 +53,7 @@ for (const { id } of contribuicoes) {
   }
   // regrava a partir dos dados validados (nada do arquivo original passa direto para o repositório)
   const pacote = criarPacote(lido.exemplos, { origem: 'Sinalume — voluntários', licenca: 'CC-BY-4.0' })
-  writeFileSync(`.importar/${id}.json`, JSON.stringify({ ...pacote, id, recebidoEm: dado.recebidoEm }))
+  writeFileSync(`.importar/${id}.json`, JSON.stringify({ ...pacote, id, recebidoEm: dado.recebidoEm, consentimento: registro }))
 
   const conta = new Map<string, number>()
   lido.exemplos.forEach((e) => conta.set(e.glosa, (conta.get(e.glosa) ?? 0) + 1))
@@ -63,7 +70,7 @@ for (const { id } of contribuicoes) {
       `**Voluntário(a):** ${autores.join('; ') || 'anônimo'}`,
       `**Recebido em:** ${dado.recebidoEm ?? '—'}`,
       '',
-      'Enviado pelo app com consentimento (pontos das mãos, sem vídeo; licença CC BY 4.0).',
+      `Consentimento: termo versão ${registro.versao}, aceito em ${registro.aceitoEm}, com declaração de maioridade ou autorização do responsável. Pontos das mãos, sem vídeo; licença CC BY 4.0.`,
       'Leia a verificação abaixo. Se estiver tudo certo, clique em **Merge pull request**.',
       '',
     ].join('\n'),

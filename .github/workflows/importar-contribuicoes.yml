@@ -1,10 +1,11 @@
-# A cada hora, busca as gravações enviadas pelos voluntários (função no Vercel) e abre um pedido de
-# aprovação (Pull Request) para cada envio, já com o relatório da verificação automática.
+# A cada hora, busca o que chegou pelo app (função no Vercel):
+# - gravações de sinais: abre um pedido de aprovação (Pull Request) com a verificação automática;
+# - sugestões, avisos de erro e pedidos de remoção: abre uma issue com o rótulo certo.
 # Quem coordena só lê o relatório e clica em "Merge".
 #
 # Requisitos (uma vez): variável do repositório API_SINALUME = https://<projeto>.vercel.app
 # e, em Settings > Actions > General, "Allow GitHub Actions to create and approve pull requests".
-name: Importar contribuições de sinais
+name: Importar contribuições e sugestões
 
 on:
   schedule:
@@ -14,6 +15,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: importar-contribuicoes
@@ -63,3 +65,18 @@ jobs:
             gh pr create --head "$ramo" --base ${{ github.event.repository.default_branch }} \
               --title "$(cat ".importar/$id.titulo")" --body-file corpo.md --label "contribuição"
           done < novos.txt
+      - name: Transformar sugestões em issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_SINALUME: ${{ vars.API_SINALUME }}
+        run: |
+          for r in "sugestão:0E8A16:Ideias de melhoria" "erro:D73A4A:Algo não funcionou" "sinal:F4A51C:Sinal errado ou faltando" "remoção:B60205:Pedido de remoção de gravações (LGPD)"; do
+            IFS=: read -r nome cor desc <<< "$r"
+            gh label create "$nome" --color "$cor" --description "$desc" 2>/dev/null || true
+          done
+          gh issue list --state all --limit 2000 --json title --jq '.[].title' > titulos.txt
+          npx tsx scripts/importar-sugestoes.ts titulos.txt > sugestoes.txt
+          while read -r id; do
+            [ -z "$id" ] && continue
+            gh issue create --title "$(cat ".sugestoes/$id.titulo")" --body-file ".sugestoes/$id.md" --label "$(cat ".sugestoes/$id.rotulo")"
+          done < sugestoes.txt

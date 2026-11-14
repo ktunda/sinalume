@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { baixarAcervo, enviarContribuicao, haAtualizacao, resumoLocal } from '../lib/comunidade'
+import { baixarAcervo, enviarContribuicao, haAtualizacao, meusEnvios, resumoLocal } from '../lib/comunidade'
 import { UFS, type UF } from '../lib/pacote'
 
 const CHAVE_PERFIL = 'sinalume:perfil'
@@ -17,6 +17,8 @@ export function Comunidade({ aoMudar }: { aoMudar?: () => void }) {
   const [resumo, setResumo] = useState<Awaited<ReturnType<typeof resumoLocal>> | null>(null)
   const [perfil, setPerfil] = useState(lerPerfil)
   const [consentimento, setConsentimento] = useState(false)
+  const [maiorIdade, setMaiorIdade] = useState(false)
+  const [envios, setEnvios] = useState(meusEnvios)
   const [ocupado, setOcupado] = useState<'enviar' | 'baixar' | null>(null)
   const [mensagem, setMensagem] = useState('')
   const [novidade, setNovidade] = useState(false)
@@ -40,12 +42,18 @@ export function Comunidade({ aoMudar }: { aoMudar?: () => void }) {
     setOcupado('enviar')
     setMensagem('')
     try {
-      const r = await enviarContribuicao({ apelido: perfil.apelido, uf: perfil.uf || undefined, consentimento })
+      const r = await enviarContribuicao({
+        apelido: perfil.apelido,
+        uf: perfil.uf || undefined,
+        consentimento,
+        maiorIdadeOuResponsavel: maiorIdade,
+      })
       setMensagem(
         r.enviados === 0
           ? 'Não há gravações novas para enviar.'
-          : `Obrigado! ${r.enviados} gravações enviadas. Depois da revisão, elas chegam para todos.`,
+          : `Obrigado! ${r.enviados} gravações enviadas (código ${r.pedido}). Depois da revisão, elas chegam para todos.`,
       )
+      setEnvios(meusEnvios())
     } catch (e) {
       setMensagem((e as Error).message)
     } finally {
@@ -107,17 +115,41 @@ export function Comunidade({ aoMudar }: { aoMudar?: () => void }) {
               ))}
             </select>
           </div>
+          <p className="nota">
+            Leia o <a href="#/termo">Termo de consentimento</a> antes de enviar. Só pontos das mãos são enviados, nunca o
+            vídeo.
+          </p>
           <label className="alternador comunidade__termo">
             <input type="checkbox" checked={consentimento} onChange={(e) => setConsentimento(e.target.checked)} />
             <span>
-              Concordo em doar ao Sinalume os pontos das mãos destas gravações (não o vídeo), para uso aberto e
-              gratuito sob a licença CC BY 4.0. O apelido e o estado são opcionais.
+              Li e aceito o Termo de consentimento: autorizo o Sinalume a usar e a compartilhar publicamente estas
+              gravações (licença CC BY 4.0). Sei que posso pedir a remoção quando quiser.
             </span>
           </label>
-          <button type="button" onClick={enviar} disabled={!consentimento || ocupado !== null}>
+          <label className="alternador comunidade__termo">
+            <input type="checkbox" checked={maiorIdade} onChange={(e) => setMaiorIdade(e.target.checked)} />
+            <span>Tenho 18 anos ou mais, ou sou o responsável legal por quem gravou.</span>
+          </label>
+          <button type="button" onClick={enviar} disabled={!consentimento || !maiorIdade || ocupado !== null}>
             {ocupado === 'enviar' ? 'Enviando…' : `⬆ Enviar ${resumo.pendentes} gravações`}
           </button>
         </div>
+      )}
+      {envios.length > 0 && (
+        <details className="comunidade__envios">
+          <summary>Meus envios ({envios.length})</summary>
+          <p className="nota">Guarde estes códigos: eles servem para pedir a remoção na aba Sugestões.</p>
+          <ul>
+            {envios
+              .slice()
+              .reverse()
+              .map((e) => (
+                <li key={e.id}>
+                  <code>{e.id}</code> · {e.exemplos} gravações · {new Date(e.em).toLocaleDateString('pt-BR')}
+                </li>
+              ))}
+          </ul>
+        </details>
       )}
       {mensagem && (
         <p className="comunidade__mensagem" aria-live="polite">

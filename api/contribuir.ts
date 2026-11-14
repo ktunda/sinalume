@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   tentativas.set(ip, [...recentes, agora])
 
   const r = await processarContribuicao(await req.text(), async (caminho, conteudo) => {
-    await put(caminho, conteudo, { access: ACESSO_BLOB, contentType: 'application/json', addRandomSuffix: false })
+    await put(caminho, conteudo, { access: ACESSO_BLOB, contentType: 'application/json', addRandomSuffix: false, ttlDays: 60 })
   })
   return json(r.status, r.corpo, c)
 }

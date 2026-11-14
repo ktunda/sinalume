@@ -9,6 +9,8 @@ import {
   importarPacote,
   removerGlosa,
 } from '../lib/acervo'
+import { parametroRota } from '../lib/rota'
+import { glosaValida, normalizarGlosa } from '../lib/pacote'
 import { Segmentador, type Exemplo } from '../lib/reconhecedor'
 import { CATEGORIAS, VOCABULARIO, type Categoria } from '../lib/vocab'
 
@@ -18,11 +20,20 @@ const REPETICOES = 5
  * Gravação de sinais por voluntários (intérpretes e pessoas surdas).
  * Cada sinal é gravado 5 vezes; tudo fica no celular e pode ser compartilhado como arquivo.
  */
+function glosaDaRota(): string | null {
+  const g = parametroRota('g')
+  return g && glosaValida(normalizarGlosa(g)) ? normalizarGlosa(g) : null
+}
+
 export function Ensinar() {
   const [exemplos, setExemplos] = useState<Exemplo[]>([])
-  const [glosa, setGlosa] = useState<string | null>(null)
+  // veio da lista de sinais (#/ensinar?g=GLOSA): já abre pronto para gravar
+  const [glosa, setGlosa] = useState<string | null>(glosaDaRota)
   const [, setGravadas] = useState(0)
-  const [mensagem, setMensagem] = useState('')
+  const [mensagem, setMensagem] = useState(() => {
+    const g = glosaDaRota()
+    return g ? `Faça o sinal "${g}" e abaixe as mãos no fim. Repita ${REPETICOES} vezes.` : ''
+  })
   const [capturando, setCapturando] = useState(false)
   const [nova, setNova] = useState('')
   const inputArquivo = useRef<HTMLInputElement>(null)
@@ -34,7 +45,7 @@ export function Ensinar() {
 
   const contagem = useMemo(() => {
     const m = new Map<string, number>()
-    exemplos.forEach((e) => m.set(e.glosa, (m.get(e.glosa) ?? 0) + 1))
+    exemplos.filter((e) => e.origem !== 'comunidade').forEach((e) => m.set(e.glosa, (m.get(e.glosa) ?? 0) + 1))
     return m
   }, [exemplos])
 
@@ -90,7 +101,9 @@ export function Ensinar() {
   }
 
   const categorias = Object.keys(CATEGORIAS) as Categoria[]
-  const extras = [...contagem.keys()].filter((g) => !VOCABULARIO.some((v) => v.glosa === g))
+  const filtro = nova.trim().toLowerCase()
+  const combina = (g: string, rotulo: string) => !filtro || rotulo.toLowerCase().includes(filtro) || g.toLowerCase().includes(filtro)
+  const extras = [...contagem.keys()].filter((g) => !VOCABULARIO.some((v) => v.glosa === g) && combina(g, g))
 
   return (
     <div className="tela tela--ensinar">
@@ -106,13 +119,34 @@ export function Ensinar() {
       />
 
       <div className="aviso-card" aria-live="polite">
-        <p>{mensagem || 'Escolha um sinal abaixo para gravar. Use boa luz e deixe mãos e rosto aparecendo.'}</p>
+        <p>{mensagem || 'Digite ou escolha um sinal para gravar. Use boa luz e deixe mãos e rosto aparecendo.'}</p>
         {glosa && (
           <button type="button" onClick={() => setGlosa(null)}>
             Cancelar
           </button>
         )}
       </div>
+
+      <form
+        className="digitar digitar--destaque"
+        onSubmit={(e) => {
+          e.preventDefault()
+          const g = normalizarGlosa(nova)
+          if (glosaValida(g)) {
+            escolher(g)
+            setNova('')
+          } else if (nova.trim()) setMensagem('Use só letras, números e espaços no nome do sinal.')
+        }}
+      >
+        <input
+          value={nova}
+          onChange={(e) => setNova(e.target.value)}
+          placeholder="Digite qualquer sinal (ex.: célula de jovens)"
+          aria-label="Digite o sinal que vai gravar ou busque na lista"
+        />
+        <button type="submit">Gravar</button>
+      </form>
+      <p className="nota">Digite qualquer palavra ou expressão, ou escolha na lista abaixo.</p>
 
       <div className="acoes">
         <button type="button" onClick={exportar} disabled={exemplos.length === 0}>
@@ -132,24 +166,11 @@ export function Ensinar() {
 
       <Comunidade aoMudar={atualizar} />
 
-      <form
-        className="digitar"
-        onSubmit={(e) => {
-          e.preventDefault()
-          const g = nova.trim().toUpperCase().replace(/\s+/g, '-')
-          if (g) escolher(g)
-          setNova('')
-        }}
-      >
-        <input value={nova} onChange={(e) => setNova(e.target.value)} placeholder="Novo sinal (ex.: CÉLULA-JOVENS)" />
-        <button type="submit">Gravar</button>
-      </form>
-
-      {categorias.map((c) => (
+      {categorias.filter((c) => VOCABULARIO.some((v) => v.categoria === c && combina(v.glosa, v.texto))).map((c) => (
         <section key={c} className="vocab">
           <h3>{CATEGORIAS[c]}</h3>
           <div className="vocab__lista">
-            {VOCABULARIO.filter((v) => v.categoria === c).map((v) => (
+            {VOCABULARIO.filter((v) => v.categoria === c && combina(v.glosa, v.texto)).map((v) => (
               <SinalChip key={v.glosa} glosa={v.glosa} rotulo={v.texto} n={contagem.get(v.glosa) ?? 0} ativo={glosa === v.glosa} aoEscolher={escolher} aoApagar={async (g) => { await removerGlosa(g); atualizar() }} />
             ))}
           </div>
@@ -157,7 +178,7 @@ export function Ensinar() {
       ))}
       {extras.length > 0 && (
         <section className="vocab">
-          <h3>Outros sinais</h3>
+          <h3>Sinais novos gravados aqui</h3>
           <div className="vocab__lista">
             {extras.map((g) => (
               <SinalChip key={g} glosa={g} rotulo={g.toLowerCase()} n={contagem.get(g) ?? 0} ativo={glosa === g} aoEscolher={escolher} aoApagar={async (x) => { await removerGlosa(x); atualizar() }} />

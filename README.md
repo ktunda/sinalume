@@ -10,6 +10,8 @@ Sem fins comerciais, sem anúncios, sem cadastro e com custo zero de operação.
 - **Modo culto:** legenda enorme e avatar no projetor ou na TV, para pregações e celebrações.
 - **Ensinar sinais:** voluntários gravam sinais no próprio app e enviam para a **base da comunidade**.
 - **Sinais da comunidade:** depois de uma revisão rápida, cada sinal enviado chega a todos os celulares.
+- **Sinais que temos:** lista do que já está pronto, do que precisa de mais pessoas e do que falta gravar.
+- **Sugestões:** ideias de melhoria, avisos de erro e pedidos de remoção, sem precisar de conta.
 
 > O Sinalume reconhece um vocabulário limitado e pode errar. Não substitui intérprete de Libras em situações
 > importantes, como consultas médicas e assuntos jurídicos.
@@ -72,6 +74,10 @@ Voluntário grava 5x ─► "Enviar minhas gravações" ─► api/contribuir (V
 - A verificação automática avisa quando um sinal parece outro ou quando as repetições estão incoerentes.
 - O acervo publicado guarda até 8 exemplos por sinal, alternando pessoas e regiões, separado por categoria.
 - Guia de quem aprova: [`docs/APROVAR-CONTRIBUICOES.md`](docs/APROVAR-CONTRIBUICOES.md).
+- Ciclo de melhoria e metas: [`docs/EVOLUCAO.md`](docs/EVOLUCAO.md).
+- Envio exige aceite do **Termo de consentimento** (versão registrada em cada contribuição) e declaração de
+  maioridade ou autorização do responsável. Remoção a pedido pela aba **Sugestões**.
+- A aba **Sugestões** (ideias, erros, sinais faltando, remoções) vira issues públicas no GitHub, sem conta.
 
 Fontes do acervo:
 

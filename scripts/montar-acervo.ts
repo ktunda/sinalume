@@ -4,7 +4,7 @@
 // Roda automaticamente antes de cada build (npm run build) e no GitHub Actions.
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { categoriaDe, type ArquivoAcervo, type IndiceAcervo } from '../src/lib/comunidade-tipos'
+import { categoriaDe, type ArquivoAcervo, type IndiceAcervo, type SituacaoSinal } from '../src/lib/comunidade-tipos'
 import { criarPacote } from '../src/lib/pacote'
 import { lerAcervo, selecionarVariados } from './acervo-comum'
 
@@ -42,6 +42,25 @@ for (const [categoria, lista] of [...porCategoria.entries()].sort()) {
   })
 }
 
+// situação de cada sinal considerando TODOS os envios aprovados (não só os publicados)
+const situacao = new Map<string, { exemplos: number; fontes: Set<string>; ufs: Set<string> }>()
+for (const e of todos) {
+  const s = situacao.get(e.glosa) ?? { exemplos: 0, fontes: new Set<string>(), ufs: new Set<string>() }
+  s.exemplos++
+  s.fontes.add(e.fonte)
+  if (e.uf) s.ufs.add(e.uf)
+  situacao.set(e.glosa, s)
+}
+const sinais: SituacaoSinal[] = [...situacao.entries()]
+  .map(([glosa, s]) => ({
+    glosa,
+    categoria: categoriaDe(glosa),
+    exemplos: s.exemplos,
+    pessoas: s.fontes.size,
+    ufs: [...s.ufs].sort(),
+  }))
+  .sort((a, b) => a.glosa.localeCompare(b.glosa, 'pt-BR'))
+
 const indice: IndiceAcervo = {
   formato: 'sinalume-acervo',
   versao: 1,
@@ -49,6 +68,7 @@ const indice: IndiceAcervo = {
   totalGlosas: new Set(escolhidos.map((e) => e.glosa)).size,
   totalExemplos: escolhidos.length,
   arquivos,
+  sinais,
 }
 writeFileSync(join(SAIDA, 'indice.json'), JSON.stringify(indice, null, 2))
 console.log(

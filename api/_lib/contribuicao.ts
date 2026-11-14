@@ -2,6 +2,7 @@
 // Valida o envio e guarda um pacote limpo. Quem leva ao GitHub é a automação
 // .github/workflows/importar-contribuicoes.yml, que busca os envios e abre um pedido de aprovação para cada um.
 import { criarPacote, LIMITES, lerPacote } from '../../src/lib/pacote'
+import { consentimentoValido, registroConsentimento } from '../../src/lib/termo'
 
 export type Resposta = { status: number; corpo: Record<string, unknown> }
 export type Salvar = (caminho: string, conteudo: string) => Promise<void>
@@ -21,7 +22,10 @@ export async function processarContribuicao(textoCorpo: string, salvar: Salvar, 
   } catch {
     return { status: 400, corpo: { erro: 'JSON inválido.' } }
   }
-  if (corpo.consentimento !== true) return { status: 400, corpo: { erro: 'Falta o consentimento.' } }
+  const consentimento = corpo.consentimento
+  if (!consentimentoValido(consentimento)) {
+    return { status: 400, corpo: { erro: 'Falta o consentimento (termo atual e confirmação de idade). Atualize o app.' } }
+  }
   const lido = lerPacote(corpo.pacote, { maxExemplos: LIMITES.exemplosPorEnvio })
   if (!lido.ok) return { status: 422, corpo: { erro: 'Pacote inválido.', detalhes: lido.erros.slice(0, 10) } }
   if (lido.exemplos.length === 0) return { status: 422, corpo: { erro: 'Nenhum exemplo.' } }
@@ -30,7 +34,15 @@ export async function processarContribuicao(textoCorpo: string, salvar: Salvar, 
   // guardamos um pacote reconstruído a partir dos dados validados — nunca o texto bruto recebido
   const pacote = criarPacote(lido.exemplos, { origem: 'Sinalume — voluntários', licenca: 'CC-BY-4.0' })
   try {
-    await salvar(caminhoDoEnvio(id), JSON.stringify({ ...pacote, id, recebidoEm: agora.toISOString() }))
+    await salvar(
+      caminhoDoEnvio(id),
+      JSON.stringify({
+        ...pacote,
+        id,
+        recebidoEm: agora.toISOString(),
+        consentimento: registroConsentimento(consentimento, agora.toISOString()),
+      }),
+    )
   } catch (e) {
     console.error(e)
     return { status: 502, corpo: { erro: 'Não foi possível guardar a contribuição agora. Tente mais tarde.' } }
