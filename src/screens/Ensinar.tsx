@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useCameraMaos } from '../components/useCameraMaos'
+import { Comunidade } from '../components/Comunidade'
 import { VisorCamera } from '../components/VisorCamera'
 import {
   adicionarExemplo,
@@ -128,6 +129,8 @@ export function Ensinar() {
           onChange={(e) => e.target.files?.[0] && importar(e.target.files[0])}
         />
       </div>
+
+      <Comunidade aoMudar={atualizar} />
 
       <form
         className="digitar"

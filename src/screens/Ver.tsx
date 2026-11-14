@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCameraMaos } from '../components/useCameraMaos'
 import { VisorCamera } from '../components/VisorCamera'
 import { carregarExemplos } from '../lib/acervo'
+import { baixarAcervo } from '../lib/comunidade'
 import { glosasParaFrase } from '../lib/frase'
 import { ClassificadorDTW, Segmentador, type Palpite } from '../lib/reconhecedor'
 import { VOCAB_POR_GLOSA } from '../lib/vocab'
@@ -21,9 +22,24 @@ export function Ver({ ir }: { ir: (r: Rota) => void }) {
   const [vozLigada, setVozLigada] = useState(true)
   const timerFrase = useRef<number | undefined>(undefined)
 
+  const [baixando, setBaixando] = useState(false)
+  const [erroAcervo, setErroAcervo] = useState('')
+  const recarregar = () => carregarExemplos().then((ex) => setClassificador(new ClassificadorDTW(ex)))
   useEffect(() => {
-    carregarExemplos().then((ex) => setClassificador(new ClassificadorDTW(ex)))
+    recarregar()
   }, [])
+  const baixar = async () => {
+    setBaixando(true)
+    setErroAcervo('')
+    try {
+      await baixarAcervo()
+      await recarregar()
+    } catch (e) {
+      setErroAcervo((e as Error).message)
+    } finally {
+      setBaixando(false)
+    }
+  }
 
   const frase = useMemo(() => glosasParaFrase(glosas), [glosas])
 
@@ -73,12 +89,13 @@ export function Ver({ ir }: { ir: (r: Rota) => void }) {
 
       {classificador && conhecidos === 0 && (
         <div className="aviso-card">
-          <p>
-            O Sinalume ainda não conhece nenhum sinal neste celular. Grave alguns sinais ou importe um pacote de sinais
-            (por exemplo, o pacote gerado a partir do V-LIBRASIL).
-          </p>
+          <p>O Sinalume ainda não conhece nenhum sinal neste celular. Baixe os sinais da comunidade ou grave os seus.</p>
+          <button type="button" className="botao-principal" onClick={baixar} disabled={baixando}>
+            {baixando ? 'Baixando…' : '⬇ Baixar sinais da comunidade'}
+          </button>
+          {erroAcervo && <p className="erro">{erroAcervo}</p>}
           <button type="button" onClick={() => ir('ensinar')}>
-            Ensinar sinais
+            Gravar meus sinais
           </button>
         </div>
       )}

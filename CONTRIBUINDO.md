@@ -5,7 +5,7 @@ O Sinalume é feito por voluntários. Toda ajuda conta — e nem toda ajuda é p
 ## Sem programar
 
 - **Gravar sinais** (pessoas surdas e intérpretes): abra o app, vá em *Ensinar sinais*, grave cada sinal 5 vezes
-  com boa luz e mãos e rosto visíveis. Exporte o arquivo e envie para a coordenação do projeto.
+  com boa luz e mãos e rosto visíveis, e toque em **Enviar minhas gravações**. Não precisa de conta.
   Quanto mais pessoas diferentes gravarem (idades, regiões, igrejas), melhor o app reconhece todo mundo.
 - **Revisar o vocabulário**: sugira sinais que faltam, especialmente variações regionais e de cada denominação.
 - **Testar**: use o app em conversas reais e conte o que deu errado (abra uma *Issue* no GitHub ou fale com a

@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "copy-assets": "node scripts/copy-assets.mjs",
-    "predev": "npm run copy-assets",
+    "predev": "npm run copy-assets && npm run acervo",
     "dev": "vite",
-    "prebuild": "npm run copy-assets",
+    "prebuild": "npm run copy-assets && npm run acervo",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "tsx --test tests/*.test.ts",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "acervo": "tsx scripts/montar-acervo.ts",
+    "validar": "tsx scripts/validar-contribuicao.ts"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.2.3",

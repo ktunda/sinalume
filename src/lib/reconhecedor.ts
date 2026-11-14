@@ -12,8 +12,10 @@ export interface Exemplo {
   glosa: string
   /** QUADROS_NORMALIZADOS x DIM, já reamostrado */
   quadros: number[][]
-  origem: 'gravado' | 'importado'
+  origem: 'gravado' | 'importado' | 'comunidade'
   criadoEm: number
+  /** quando foi enviado à comunidade (só para os gravados) */
+  enviadoEm?: number
 }
 
 export interface Palpite {

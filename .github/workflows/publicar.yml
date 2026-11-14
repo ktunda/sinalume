@@ -28,6 +28,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          VITE_API_CONTRIBUIR: ${{ vars.VITE_API_CONTRIBUIR }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

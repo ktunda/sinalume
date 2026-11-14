@@ -4,3 +4,5 @@ public/assets/vlibras
 public/mediapipe
 *.local
 .DS_Store
+public/acervo
+vercel-public

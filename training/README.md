@@ -22,11 +22,12 @@ do dataset antes. O script pode ser interrompido e retomado.
 ## 3. Gerar o pacote para o app (caminho rápido, sem treino)
 
 ```bash
-python gerar_pacote.py --pontos pontos.jsonl --saida pacote-vlibrasil.json --glosas ../src/lib/vocab.ts
+python gerar_pacote.py --pontos pontos.jsonl --saida ../acervo/base/pacote-vlibrasil.json --glosas ../src/lib/vocab.ts
 ```
 
 Gera só os sinais do vocabulário inicial e lista os que não existem no dataset (grave esses com voluntários).
-No app: *Ensinar sinais › Importar pacote*.
+Faça commit do arquivo em `acervo/base/`: na próxima publicação ele entra no acervo da comunidade e todos recebem.
+Sem `--glosas`, inclui todos os 1.364 termos do dataset.
 
 ## 4. Treinar a rede neural (Fase 1, opcional)
 

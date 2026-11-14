@@ -1,0 +1,55 @@
+# Em cada pedido de contribuição de sinais, confere o formato e comenta um relatório de qualidade.
+# Quem revisa só precisa ler o comentário e clicar em "Merge" (ou fechar, se houver problema).
+name: Verificar contribuição de sinais
+
+on:
+  pull_request:
+    paths:
+      - 'acervo/contribuicoes/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Arquivos alterados
+        id: arquivos
+        run: |
+          todos=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          contrib=$(echo "$todos" | grep '^acervo/contribuicoes/.*\.json$' || true)
+          outros=$(echo "$todos" | grep -v '^acervo/contribuicoes/' | grep -v '^$' || true)
+          if [ -n "$outros" ]; then
+            echo "Este pedido altera arquivos fora de acervo/contribuicoes — revisão manual necessária."
+            echo "$outros"
+            echo "misto=1" >> "$GITHUB_OUTPUT"
+          fi
+          printf '%s\n' "$contrib" | grep -v '^$' > lista.txt || true
+      - run: npm ci --ignore-scripts
+      - name: Verificar
+        id: verificar
+        run: |
+          set +e
+          xargs -d '\n' -a lista.txt npx tsx scripts/validar-contribuicao.ts > relatorio.md
+          echo "codigo=$?" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.arquivos.outputs.misto }}" = "1" ]; then
+            printf '\n\n> ⚠️ Este pedido também altera arquivos fora do acervo. **Não aprove** sem revisão de quem programa.\n' >> relatorio.md
+          fi
+          cat relatorio.md
+      - name: Comentar relatório
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file relatorio.md
+      - name: Falhar se o formato for inválido
+        if: steps.verificar.outputs.codigo != '0' || steps.arquivos.outputs.misto == '1'
+        run: exit 1
