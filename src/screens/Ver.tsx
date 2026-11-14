@@ -13,7 +13,7 @@ const CONFIANCA_MINIMA = 0.35
 const PAUSA_FIM_FRASE_MS = 2500
 
 /** Fluxo 1: o ouvinte aponta a câmera para o surdo; os sinais viram texto e voz. */
-export function Ver({ ir }: { ir: (r: Rota) => void }) {
+export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: boolean }) {
   const [classificador, setClassificador] = useState<ClassificadorDTW | null>(null)
   const [glosas, setGlosas] = useState<string[]>([])
   const [ultimo, setUltimo] = useState<Palpite | null>(null)
@@ -75,7 +75,7 @@ export function Ver({ ir }: { ir: (r: Rota) => void }) {
   const conhecidos = classificador?.glosasConhecidas.length ?? 0
 
   return (
-    <div className="tela tela--ver">
+    <div className={grande ? 'ver ver--grande' : 'tela tela--ver'}>
       <VisorCamera
         videoRef={cam.videoRef}
         canvasRef={cam.canvasRef}

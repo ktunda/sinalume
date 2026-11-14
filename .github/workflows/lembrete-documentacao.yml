@@ -1,0 +1,38 @@
+# Quando o manual muda (função nova ou alterada), abre um lembrete para atualizar também a apresentação
+# do projeto, que é usada na divulgação. O manual em si é travado pelos testes (tests/manual.test.ts).
+name: Lembrete — atualizar apresentação
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/lib/manual.ts'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lembrar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Abrir lembrete
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create "documentação" --color 1B3A8C --description "Manual e apresentação" 2>/dev/null || true
+          {
+            echo "O manual do app mudou no commit ${GITHUB_SHA::7}. Atualize a **apresentação do projeto** (e o PDF de divulgação) com as mesmas mudanças."
+            echo
+            echo "Seções do manual alteradas:"
+            echo
+            echo '```diff'
+            git diff HEAD~1 -- src/lib/manual.ts | grep -E "^[+-] *(titulo|resumo):" | head -40
+            echo '```'
+            echo
+            echo "Manual completo: [docs/MANUAL.md](../blob/main/docs/MANUAL.md)"
+          } > corpo.md
+          gh issue create --title "Atualizar apresentação: manual mudou em ${GITHUB_SHA::7}" --body-file corpo.md --label "documentação"

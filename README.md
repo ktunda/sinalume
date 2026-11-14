@@ -12,6 +12,8 @@ Sem fins comerciais, sem anúncios, sem cadastro e com custo zero de operação.
 - **Sinais da comunidade:** depois de uma revisão rápida, cada sinal enviado chega a todos os celulares.
 - **Sinais que temos:** lista do que já está pronto, do que precisa de mais pessoas e do que falta gravar.
 - **Sugestões:** ideias de melhoria, avisos de erro e pedidos de remoção, sem precisar de conta.
+- **Manual:** dentro do app (botão 📖 e “?” em cada tela) e em [`docs/MANUAL.md`](docs/MANUAL.md).
+- **Transcrição no aparelho:** fala vira texto sem internet, igual no iPhone e no Android.
 
 > O Sinalume reconhece um vocabulário limitado e pode errar. Não substitui intérprete de Libras em situações
 > importantes, como consultas médicas e assuntos jurídicos.

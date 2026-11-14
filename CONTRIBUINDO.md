@@ -31,6 +31,9 @@ Regras do projeto:
 - **Celular simples primeiro**: teste em Android de entrada (2–3 GB de RAM) e conexão lenta.
 - **Acessibilidade**: textos grandes, contraste alto, nenhum aviso só por som.
 - Se mudar o vetor de características em `src/lib/maos.ts`, mude igual em `training/caracteristicas.py`.
+- **Documentação junto com cada função:** toda tela ou função nova ganha uma seção em `src/lib/manual.ts`
+  (rode `npm run manual` para atualizar `docs/MANUAL.md`). Os testes falham se faltar. Ao mudar o manual, o
+  GitHub abre um lembrete para atualizar também a apresentação do projeto.
 
 ## Boas primeiras tarefas
 

@@ -10,8 +10,9 @@ const Sobre = lazy(() => import('./screens/Sobre').then((m) => ({ default: m.Sob
 const Sugestoes = lazy(() => import('./screens/Sugestoes').then((m) => ({ default: m.Sugestoes })))
 const Termo = lazy(() => import('./screens/Termo').then((m) => ({ default: m.Termo })))
 const Ver = lazy(() => import('./screens/Ver').then((m) => ({ default: m.Ver })))
+const Ajuda = lazy(() => import('./screens/Ajuda').then((m) => ({ default: m.Ajuda })))
 
-export type Rota = 'inicio' | 'ouvir' | 'ver' | 'culto' | 'ensinar' | 'sinais' | 'sugestoes' | 'termo' | 'sobre'
+export type Rota = 'inicio' | 'ouvir' | 'ver' | 'culto' | 'ensinar' | 'sinais' | 'sugestoes' | 'termo' | 'sobre' | 'ajuda'
 
 const TITULOS: Record<Rota, string> = {
   inicio: 'Sinalume',
@@ -23,6 +24,13 @@ const TITULOS: Record<Rota, string> = {
   sugestoes: 'Sugestões',
   termo: 'Termo de consentimento',
   sobre: 'Sobre o Sinalume',
+  ajuda: 'Manual',
+}
+
+// seção do manual que explica cada tela (o manual em si não importa nada pesado)
+const SECAO_DA_ROTA: Partial<Record<Rota, string>> = {
+  ver: 'ver', ouvir: 'ouvir', culto: 'culto', ensinar: 'ensinar', sinais: 'sinais',
+  sugestoes: 'sugestoes', termo: 'termo', sobre: 'sobre',
 }
 
 const lerRota = (): Rota => {
@@ -53,6 +61,16 @@ export default function App() {
               ←
             </button>
             <h1>{TITULOS[rota]}</h1>
+            {rota !== 'ajuda' && (
+              <button
+                type="button"
+                className="topo__ajuda"
+                onClick={() => ir('ajuda', { s: SECAO_DA_ROTA[rota] ?? 'comecar' })}
+                aria-label={`Ajuda: ${TITULOS[rota]}`}
+              >
+                ?
+              </button>
+            )}
           </>
         )}
       </header>
@@ -61,12 +79,13 @@ export default function App() {
         {rota === 'inicio' && <Inicio ir={ir} />}
         {rota === 'ouvir' && <Ouvir />}
         {rota === 'ver' && <Ver ir={ir} />}
-        {rota === 'culto' && <Culto />}
+        {rota === 'culto' && <Culto ir={ir} />}
         {rota === 'ensinar' && <Ensinar key={location.hash} />}
         {rota === 'sinais' && <Sinais ir={ir} />}
         {rota === 'sugestoes' && <Sugestoes />}
         {rota === 'termo' && <Termo />}
         {rota === 'sobre' && <Sobre />}
+        {rota === 'ajuda' && <Ajuda key={location.hash} />}
         </Suspense>
       </main>
     </div>
@@ -103,6 +122,7 @@ function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void
         <button type="button" onClick={() => ir('ensinar')}>✋ Ensinar sinais</button>
         <button type="button" onClick={() => ir('sinais')}>📋 Sinais que temos</button>
         <button type="button" onClick={() => ir('sugestoes')}>💡 Sugestões</button>
+        <button type="button" onClick={() => ir('ajuda')}>📖 Manual</button>
         <button type="button" onClick={() => ir('sobre')}>ℹ️ Sobre e privacidade</button>
       </div>
     </div>

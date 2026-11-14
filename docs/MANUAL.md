@@ -1,0 +1,176 @@
+# Manual do Sinalume
+
+> Versão 14/11/2026. Gerado automaticamente a partir de `src/lib/manual.ts` — não edite este arquivo à mão; rode `npm run manual`.
+
+- [Começar](#comecar)
+- [Instalar no celular](#instalar)
+- [Surdo sinaliza → texto e voz](#ver)
+- [Ouvinte fala → legenda e Libras](#ouvir)
+- [Transcrição da fala (navegador ou aparelho)](#transcricao)
+- [Modo culto](#culto)
+- [Ensinar sinais](#ensinar)
+- [Sinais que temos](#sinais)
+- [Sugestões](#sugestoes)
+- [Termo de consentimento](#termo)
+- [Sobre e privacidade](#sobre)
+- [Este manual](#ajuda)
+- [Problemas comuns](#problemas)
+
+<a id="comecar"></a>
+## Começar
+
+O Sinalume é gratuito e abre no navegador do celular, sem cadastro. Na tela inicial você escolhe a situação: a pessoa surda sinaliza, a pessoa ouvinte fala, ou o modo culto.
+
+1. Abra ktunda.github.io/sinalume no Chrome (Android) ou no Safari (iPhone).
+2. Toque no cartão da situação que você está vivendo.
+3. Para voltar, toque na seta ← no alto da tela.
+
+**Dicas**
+
+- Instale o app na tela inicial para abrir mais rápido e usar sem internet (veja "Instalar no celular").
+
+<a id="instalar"></a>
+## Instalar no celular
+
+O Sinalume não precisa de loja de aplicativos: ele é instalado pelo próprio navegador.
+
+1. Android (Chrome): toque em "Instalar" no convite da tela inicial, ou no menu ⋮ › "Instalar app".
+2. iPhone (Safari): toque em Compartilhar ⬆︎ › "Adicionar à Tela de Início" › "Adicionar".
+3. Depois, abra pelo ícone azul com o "s" e o ponto de luz.
+
+<a id="ver"></a>
+## Surdo sinaliza → texto e voz
+
+A pessoa ouvinte aponta a câmera para a pessoa surda. O app lê as mãos no próprio celular, reconhece cada sinal e monta a frase em português, na tela e em voz.
+
+1. Na primeira vez, permita o uso da câmera.
+2. Enquadre as mãos e o rosto da pessoa surda, com boa luz. O selo verde "Mãos detectadas" confirma.
+3. A pessoa faz um sinal e abaixa as mãos (ou faz uma pausa). O sinal entra na frase.
+4. Depois de uma pausa de 2,5 s, o app fala a frase. Use 🔊 Falar para repetir.
+5. Use ⌫ Apagar sinal para corrigir o último sinal, ou Nova frase para recomeçar.
+
+**Dicas**
+
+- Se o app ainda não conhece sinais, toque em "Baixar sinais da comunidade".
+- O botão ⇄ troca entre a câmera de trás e a da frente.
+- O vídeo nunca sai do celular. Funciona sem internet depois do primeiro uso.
+- Se aparecer "Não entendi esse sinal", peça para repetir mais devagar.
+
+<a id="ouvir"></a>
+## Ouvinte fala → legenda e Libras
+
+A pessoa ouvinte fala (ou digita). A fala vira legenda grande e o avatar do VLibras faz os sinais em Libras para a pessoa surda.
+
+1. Segure o botão "🎤 Segure para falar", fale e solte.
+2. A legenda aparece na tela e o avatar sinaliza a frase.
+3. Sem microfone ou em lugar barulhento, digite no campo "Ou digite aqui…" e toque em Sinalizar.
+4. Use ↺ Repetir para o avatar sinalizar de novo e Velocidade para deixar mais lento ou mais rápido.
+
+**Dicas**
+
+- Frases curtas são traduzidas melhor pelo avatar.
+- O avatar baixa cerca de 14 MB na primeira vez e precisa de internet.
+
+<a id="transcricao"></a>
+## Transcrição da fala (navegador ou aparelho)
+
+Para transformar fala em texto, o app usa o reconhecimento do navegador (rápido, precisa de internet) ou a transcrição no próprio aparelho (funciona sem internet e igual no iPhone e no Android, mas é mais lenta).
+
+1. Em "Ouvinte fala" ou "Modo culto", abra "Transcrição".
+2. Automática: usa a do navegador e troca sozinha para a do aparelho quando falta internet ou o ditado falha.
+3. No aparelho: escolha o modelo Preciso (249 MB, recomendado) ou Leve (77 MB, erra mais) e toque em "Baixar agora", de preferência no Wi-Fi.
+
+**Dicas**
+
+- No aparelho, a legenda aparece alguns segundos depois de cada frase — mais rápido em celulares novos.
+- No iPhone, se o ditado estiver desligado nos Ajustes, o app usa a transcrição no aparelho.
+
+<a id="culto"></a>
+## Modo culto
+
+Para cultos, missas, palestras e reuniões, nos dois sentidos: a pregação vira legenda enorme e Libras no avatar, e uma pessoa surda pode sinalizar para a igreja, com o texto na tela e em voz.
+
+1. Escolha o sentido no alto: "🗣️ Pregação → Libras" ou "🤟 Libras → igreja".
+2. Pregação → Libras: toque em "▶ Iniciar: ouvir a pregação" e permita o microfone. A legenda aparece grande e o avatar sinaliza. Para terminar, toque em "■ Encerrar".
+3. Libras → igreja: aponte a câmera para a pessoa surda. Cada sinal reconhecido entra na frase, que aparece grande e é falada.
+4. Para todos verem, ligue o celular ou notebook ao projetor ou à TV.
+
+**Dicas**
+
+- Deixe o microfone perto de quem fala ou ligado à mesa de som; música alta atrapalha a transcrição.
+- Para a igreja ouvir a voz do app, ligue a saída de som do aparelho à mesa de som.
+- Desmarque "Mostrar avatar" para deixar só a legenda.
+- A tela fica acesa durante o culto. No iPhone antigo, se apagar, desative o bloqueio automático em Ajustes › Tela e Brilho.
+
+<a id="ensinar"></a>
+## Ensinar sinais
+
+Voluntários gravam sinais para o Sinalume aprender. Só os pontos das mãos são guardados, nunca o vídeo.
+
+1. Digite qualquer sinal (inclusive regional ou da sua igreja) e toque em Gravar, ou escolha um da lista.
+2. Faça o sinal com boa luz, mãos e rosto aparecendo, e abaixe as mãos no fim.
+3. Repita 5 vezes. O app avisa a cada gravação.
+4. Toque em "Enviar minhas gravações", leia o Termo de consentimento, marque as duas confirmações e envie.
+5. Guarde o código do envio, que aparece em "Meus envios".
+
+**Dicas**
+
+- "Exportar sinais" gera um arquivo para trocar sinais sem internet; "Importar pacote" recebe.
+- "Atualizar sinais da comunidade" baixa os sinais aprovados de todo mundo.
+
+<a id="sinais"></a>
+## Sinais que temos
+
+Mostra o progresso do vocabulário: o que está pronto, o que precisa de mais pessoas e o que falta gravar.
+
+1. Use os filtros: Falta gravar, Precisa de mais pessoas, Pronto.
+2. Toque em Gravar ao lado de um sinal para ir direto à gravação.
+3. Para um sinal que não está na lista, digite no campo de busca e toque em "Gravar sinal novo".
+
+**Dicas**
+
+- Um sinal fica pronto com 10 gravações de pelo menos 3 pessoas diferentes.
+
+<a id="sugestoes"></a>
+## Sugestões
+
+Para mandar ideias, avisar de erros, pedir sinais ou pedir a remoção das suas gravações. Sem conta.
+
+1. Escolha o assunto: ideia, erro, sinal, remoção ou outro.
+2. Escreva a mensagem (para remoção, escolha o código do envio) e toque em Enviar.
+3. Guarde o protocolo. Acompanhe em github.com/ktunda/sinalume/issues.
+
+**Dicas**
+
+- As mensagens ficam públicas: não escreva nome completo, telefone ou e-mail.
+
+<a id="termo"></a>
+## Termo de consentimento
+
+Explica o que você doa ao enviar gravações (pontos das mãos, sem vídeo), como os dados são compartilhados (licença aberta CC BY 4.0), a exigência de 18 anos ou autorização do responsável e o direito de remoção.
+
+<a id="sobre"></a>
+## Sobre e privacidade
+
+Mostra o que o app faz com os dados, os limites do app e os créditos (VLibras, MediaPipe, bancos de sinais).
+
+<a id="ajuda"></a>
+## Este manual
+
+O manual fica no próprio app, no botão "Manual" da tela inicial e no "?" de cada tela.
+
+<a id="problemas"></a>
+## Problemas comuns
+
+O que fazer quando algo não funciona.
+
+1. "Não foi possível iniciar a câmera": permita a câmera nas configurações do navegador e recarregue.
+2. "Não ouvi nada": fale mais perto do celular ou digite o texto.
+3. O avatar não aparece: verifique a internet; a legenda continua funcionando.
+4. O app não reconheceu o sinal: talvez ainda não tenha sido gravado — grave do seu jeito em Ensinar sinais.
+5. Algo diferente disso: mande pela aba Sugestões, opção "Algo não funcionou".
+
+**Dicas**
+
+- O Sinalume não substitui um intérprete de Libras em consultas médicas, assuntos jurídicos e outras situações importantes.
+

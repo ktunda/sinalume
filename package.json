@@ -13,7 +13,8 @@
     "test": "tsx --test tests/*.test.ts",
     "lint": "oxlint",
     "acervo": "tsx scripts/montar-acervo.ts",
-    "validar": "tsx scripts/validar-contribuicao.ts"
+    "validar": "tsx scripts/validar-contribuicao.ts",
+    "manual": "tsx scripts/gerar-manual.ts"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.2.3",

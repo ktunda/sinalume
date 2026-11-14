@@ -130,10 +130,7 @@ main { flex: 1; }
 .culto__avatar { width: min(38vw, 360px); }
 .culto__avatar .avatar { height: 100%; }
 .tela--culto .alternador { color: #fff; }
-@media (max-width: 640px) {
-  .culto__palco { flex-direction: column-reverse; }
-  .culto__avatar { width: 100%; }
-}
+
 
 /* Sobre */
 .tela--sobre h2 { font-size: 1.1rem; margin: 8px 0 0; color: var(--azul); }
@@ -213,3 +210,39 @@ main { flex: 1; }
 .instalar__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
 .motor__qualidade { display: flex; flex-direction: column; gap: 6px; font-size: .9rem; margin-bottom: 10px; }
 .motor__qualidade select { min-height: 44px; border: 2px solid var(--borda); border-radius: 10px; padding: 0 8px; font: inherit; }
+
+/* Manual */
+.topo__ajuda { margin-left: auto; background: transparent; border-color: #fff; color: #fff; min-width: 44px; padding: 0; border-radius: 999px; font-size: 1.2rem; }
+.ajuda__indice { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.ajuda__indice a { display: inline-flex; min-height: 40px; align-items: center; padding: 0 12px; border: 2px solid var(--borda); border-radius: 999px; background: #fff; color: var(--azul); font-weight: 600; text-decoration: none; }
+.ajuda__secao { background: #fff; border: 2px solid var(--borda); border-radius: 16px; padding: 12px 16px; scroll-margin-top: 80px; }
+.ajuda__secao ol { padding-left: 22px; }
+.ajuda__secao li { margin: 6px 0; }
+.ajuda__dicas { background: #fff7e6; border-radius: 12px; padding: 8px 12px; }
+.ajuda__dicas ul { margin: 6px 0 0; padding-left: 18px; }
+
+/* Culto: sentidos, botão no alto, celular com legenda primeiro e avatar menor */
+.culto { display: flex; flex-direction: column; gap: 12px; }
+.culto__sentidos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.culto__sentidos button { background: #111; color: #e5e7eb; border-color: #374151; min-height: 52px; }
+.culto__sentidos .culto__sentido--ativo { background: var(--ambar); border-color: var(--ambar); color: #111; }
+.culto__iniciar { min-height: 64px; font-size: 1.15rem; flex: 1; }
+.culto__acoes { justify-content: space-between; }
+.culto__ouvindo { color: #f87171; font-weight: 800; margin: 0; }
+.tela--culto .culto__instrucao { color: #cbd5e1; margin: 0; }
+.culto__palco { flex-direction: column; }
+.culto__legenda { min-height: 22vh; }
+.culto__avatar { width: 100%; }
+.culto__avatar .avatar__palco { aspect-ratio: auto; height: 40vh; max-height: 40vh; }
+@media (min-width: 900px) {
+  .culto__palco { flex-direction: row; }
+  .culto__legenda { min-height: 50vh; }
+  .culto__avatar { width: min(36vw, 420px); }
+  .culto__avatar .avatar__palco { height: 60vh; max-height: 60vh; }
+}
+.tela--culto .ver--grande { display: flex; flex-direction: column; gap: 12px; }
+.ver--grande .resultado { background: #000; border-color: #333; }
+.ver--grande .resultado__frase { color: #fff; font-size: clamp(1.8rem, 6vw, 3.6rem); }
+.ver--grande .resultado__ultimo, .ver--grande .nota, .ver--grande .alternador { color: #cbd5e1; }
+.tela--culto .aviso-card, .tela--culto .aviso-card p { color: var(--texto); }
+.tela--culto .ver--grande .visor__aviso { color: #fff; }
