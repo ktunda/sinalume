@@ -1,0 +1,6 @@
+# Extração de pontos e geração de pacote (obrigatório)
+mediapipe>=0.10.14
+opencv-python-headless>=4.9
+# Treino da rede neural (opcional, Fase 1) — rode no Kaggle/Colab
+torch>=2.2
+onnx>=1.16

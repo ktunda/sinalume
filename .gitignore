@@ -1,0 +1,6 @@
+node_modules
+dist
+public/assets/vlibras
+public/mediapipe
+*.local
+.DS_Store

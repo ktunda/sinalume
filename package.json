@@ -1,0 +1,36 @@
+{
+  "name": "sinalume",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "copy-assets": "node scripts/copy-assets.mjs",
+    "predev": "npm run copy-assets",
+    "dev": "vite",
+    "prebuild": "npm run copy-assets",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "tsx --test tests/*.test.ts",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^1.2.3",
+    "idb-keyval": "^6.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vlibras-player-webjs": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.90.0",
+    "tsx": "^4.23.15",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.6",
+    "vite-plugin-pwa": "^2.0.0"
+  },
+  "description": "Sinalume: tradução gratuita e de código aberto entre Libras e português",
+  "license": "GPL-3.0-or-later"
+}
