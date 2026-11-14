@@ -1,0 +1,10 @@
+# Gerador dos materiais da marca
+
+Gera o **Manual da Marca** e a **Apresentação do projeto** em PDF, seguindo a identidade do Sinalume.
+
+1. `npm pack @fontsource-variable/nunito` e extraia para `fonts/fontsource-variable-nunito-<versão>/` (ajuste o caminho em `comum.py`).
+2. `pip install segno` (QR codes).
+3. `python3 manual_marca.py && node render.js $PWD/manual-da-marca.html manual.pdf`
+4. `python3 apresentacao.py && node render.js $PWD/apresentacao.html apresentacao.pdf`
+
+Toda função nova do app deve ser incluída em `apresentacao.py` (e em `src/lib/manual.ts`) antes de gerar o PDF.

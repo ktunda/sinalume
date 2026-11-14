@@ -9,3 +9,7 @@ vercel-public
 __pycache__/
 .importar/
 .sugestoes/
+
+docs/identidade/gerador/fonts/
+docs/identidade/gerador/*.html
+docs/identidade/gerador/__pycache__/
