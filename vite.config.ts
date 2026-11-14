@@ -6,6 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   base: './',
   assetsInclude: ['**/*.unityweb'],
+  // worker como módulo: permite import() dinâmico também no Safari (iPhone)
+  worker: { format: 'es' },
   plugins: [
     react(),
     VitePWA({
