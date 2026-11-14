@@ -2,7 +2,7 @@
 
 Tempo: cerca de 1 minuto por envio. Não precisa saber programar.
 
-1. Você recebe um e-mail do GitHub: **"Contribuição: 12 gravações · ÁGUA ×5, DEUS ×5…"**.
+1. Até uma hora depois do envio, você recebe um e-mail do GitHub: **"Contribuição: 12 gravações · ÁGUA ×5, DEUS ×5…"**.
    Também dá para ver todos em **Pull requests** no repositório (filtro `label:contribuição`).
 2. Abra o pedido e leia o comentário **"Verificação automática da contribuição"**:
    - ✅ **tudo certo** → clique em **Merge pull request** › **Confirm merge**.
@@ -23,10 +23,9 @@ Tempo: cerca de 1 minuto por envio. Não precisa saber programar.
 ## Como funciona por trás
 
 ```
-App (voluntário) ─► api/contribuir (Vercel, grátis) ─► Pull Request no GitHub ─► verificação automática
-                                                                              └► você aprova ─► GitHub Pages publica
-                                                                                               public/acervo/*.json
-App (todos) ◄──────────────────────── "Atualizar sinais da comunidade" ◄──────────────────────┘
+App (voluntário) ─► api/contribuir (Vercel Blob, grátis) ─► GitHub Actions (a cada hora) abre o Pull Request
+                                                            com a verificação automática ─► você aprova
+App (todos) ◄── "Atualizar sinais da comunidade" ◄── GitHub Pages publica public/acervo/*.json ◄──┘
 ```
 
 - A função não guarda IP nem dados pessoais; o apelido e o estado são opcionais.

@@ -8,9 +8,9 @@ import { type Categoria } from './vocab'
 
 export { categoriaDe, type ArquivoAcervo, type IndiceAcervo } from './comunidade-tipos'
 
-/** Endereço da função que recebe as contribuições (configurável em .env: VITE_API_CONTRIBUIR). */
-export const API_CONTRIBUIR: string =
-  import.meta.env.VITE_API_CONTRIBUIR || 'https://sinalume.vercel.app/api/contribuir'
+/** Endereço do projeto no Vercel que recebe as contribuições (variável API_SINALUME do repositório). */
+export const API_BASE: string = (import.meta.env.VITE_API_BASE || 'https://sinalume.vercel.app').replace(/\/$/, '')
+export const API_CONTRIBUIR = `${API_BASE}/api/contribuir`
 
 const CHAVE_VERSAO = 'sinalume:acervo:atualizadoEm'
 
@@ -92,9 +92,9 @@ export async function enviarContribuicao(dados: DadosEnvio): Promise<ResultadoEn
     } catch {
       throw new Error('Sem conexão com a base da comunidade. Suas gravações continuam salvas; tente mais tarde.')
     }
-    const corpo = (await r.json().catch(() => ({}))) as { erro?: string; pedido?: string }
+    const corpo = (await r.json().catch(() => ({}))) as { erro?: string; id?: string }
     if (!r.ok) throw new Error(corpo.erro ?? `Falha no envio (${r.status}). Tente mais tarde.`)
-    pedido = corpo.pedido
+    pedido = corpo.id
     await marcarEnviados(lote.map((e) => e.id))
   }
   return { enviados: pendentes.length, pedido }

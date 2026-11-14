@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { processarContribuicao } from '../api/_lib/contribuicao.ts'
+import { processarContribuicao, RE_ID } from '../api/_lib/contribuicao.ts'
 import { selecionarVariados, type ExemploComFonte } from '../scripts/acervo-comum.ts'
 import { codificar, decodificar } from '../src/lib/codec.ts'
 import { criarPacote, lerPacote } from '../src/lib/pacote.ts'
@@ -58,37 +58,30 @@ test('seleção do acervo alterna entre pessoas e respeita o máximo', () => {
   assert.equal(s.filter((e) => e.glosa === 'PAZ').length, 1)
 })
 
-test('função de contribuição valida e abre Pull Request no GitHub', async () => {
-  const chamadas: { metodo: string; url: string; corpo?: Record<string, unknown> }[] = []
-  const falsoGitHub = (async (url: string, init?: RequestInit) => {
-    const metodo = init?.method ?? 'GET'
-    const corpo = init?.body ? JSON.parse(String(init.body)) : undefined
-    chamadas.push({ metodo, url, corpo })
-    const resp = (dado: unknown) => new Response(JSON.stringify(dado), { status: 200 })
-    if (url.includes('/pulls?state=open')) return resp([])
-    if (url.endsWith('/git/ref/heads/main')) return resp({ object: { sha: 'abc' } })
-    if (url.endsWith('/pulls') && metodo === 'POST') return resp({ number: 7, html_url: 'https://github.com/x/sinalume/pull/7' })
-    return resp({})
-  }) as typeof fetch
-
+test('função de contribuição valida, recusa sem consentimento e guarda pacote limpo', async () => {
+  const salvos: { caminho: string; conteudo: string }[] = []
+  const salvar = async (caminho: string, conteudo: string) => {
+    salvos.push({ caminho, conteudo })
+  }
   const pacote = criarPacote([
     { glosa: 'ORAR', quadros: quadros(6), autor: 'Ana', uf: 'DF' },
     { glosa: 'ORAR', quadros: quadros(7), autor: 'Ana', uf: 'DF' },
   ])
-  const cfg = { token: 't', repo: 'x/sinalume' }
+  const sem = await processarContribuicao(JSON.stringify({ pacote }), salvar)
+  assert.equal(sem.status, 400)
+  assert.equal(salvos.length, 0, 'não deve guardar nada sem consentimento')
 
-  const semConsentimento = await processarContribuicao(JSON.stringify({ pacote }), cfg, falsoGitHub)
-  assert.equal(semConsentimento.status, 400)
-  assert.equal(chamadas.length, 0, 'não deve chamar o GitHub sem consentimento')
+  const lixo = await processarContribuicao(JSON.stringify({ consentimento: true, pacote: { formato: 'x' } }), salvar)
+  assert.equal(lixo.status, 422)
 
-  const r = await processarContribuicao(JSON.stringify({ consentimento: true, pacote }), cfg, falsoGitHub)
+  const agora = new Date('2026-11-14T12:00:00Z')
+  const r = await processarContribuicao(JSON.stringify({ consentimento: true, pacote }), salvar, agora)
   assert.equal(r.status, 201)
-  assert.equal(r.corpo.pedido, 'https://github.com/x/sinalume/pull/7')
-  const put = chamadas.find((c) => c.metodo === 'PUT')!
-  assert.match(put.url, /\/contents\/acervo\/contribuicoes\/\d{4}-\d{2}\/.+\.json$/)
-  const salvo = JSON.parse(Buffer.from(String(put.corpo!.content), 'base64').toString('utf8'))
+  const id = String(r.corpo.id)
+  assert.match(id, RE_ID)
+  assert.equal(salvos[0].caminho, `contribuicoes/2026-11/${id}.json`)
+  const salvo = JSON.parse(salvos[0].conteudo)
   assert.equal(salvo.exemplos.length, 2)
   assert.equal(salvo.licenca, 'CC-BY-4.0')
-  const pr = chamadas.find((c) => c.metodo === 'POST' && c.url.endsWith('/pulls'))!
-  assert.match(String(pr.corpo!.title), /ORAR ×2/)
+  assert.equal(lerPacote(salvo).ok, true)
 })

@@ -62,9 +62,10 @@ Câmera e microfone exigem HTTPS fora do `localhost` — o GitHub Pages já entr
 ## Base de sinais da comunidade
 
 ```
-Voluntário grava 5x ─► "Enviar minhas gravações" ─► api/contribuir (Vercel, grátis)
-   ─► Pull Request no GitHub ─► verificação automática comenta ─► coordenação clica em Merge
-   ─► GitHub Pages republica public/acervo/ ─► todos tocam em "Atualizar sinais da comunidade"
+Voluntário grava 5x ─► "Enviar minhas gravações" ─► api/contribuir (Vercel + Vercel Blob, grátis)
+   ─► a cada hora, o GitHub Actions busca os envios e abre um Pull Request com a verificação automática
+   ─► coordenação clica em Merge ─► GitHub Pages republica public/acervo/
+   ─► todos tocam em "Atualizar sinais da comunidade"
 ```
 
 - Voluntários **não precisam de conta**: basta concordar com o termo (pontos das mãos, sem vídeo, CC BY 4.0).
@@ -80,15 +81,18 @@ Fontes do acervo:
 
 Também dá para trocar sinais sem internet: *Exportar sinais* gera um arquivo que outra pessoa importa.
 
-### Configurar a função de envio (uma vez)
+### Configurar a função de envio (uma vez, sem tokens)
 
-1. Importe o repositório no [Vercel](https://vercel.com) (plano Hobby, gratuito, uso não comercial).
-2. Crie um token *fine-grained* no GitHub só para este repositório, com **Contents** e **Pull requests** em
-   leitura e escrita.
-3. No Vercel, em *Settings › Environment Variables*: `GITHUB_TOKEN` (o token), `GITHUB_REPO`
-   (`usuario/sinalume`) e, opcional, `ORIGENS_PERMITIDAS` (`https://usuario.github.io`).
-4. No GitHub, em *Settings › Secrets and variables › Actions › Variables*, crie `VITE_API_CONTRIBUIR` com
-   `https://<projeto>.vercel.app/api/contribuir`.
+1. No [Vercel](https://vercel.com) (plano Hobby, gratuito, uso não comercial), importe o repositório.
+2. Em *Storage*, crie um **Blob store** e conecte ao projeto — o Vercel cria `BLOB_READ_WRITE_TOKEN` sozinho.
+   Faça um novo deploy.
+3. No GitHub, em *Settings › Secrets and variables › Actions › Variables*, crie `API_SINALUME` com o endereço
+   do projeto (ex.: `https://sinalume.vercel.app`).
+4. Em *Settings › Actions › General*, marque **Read and write permissions** e
+   **Allow GitHub Actions to create and approve pull requests**.
+
+Opcional no Vercel: `ORIGENS_PERMITIDAS` (ex.: `https://usuario.github.io`) e `BLOB_ACESSO=public` se o
+Blob store for público. Obs.: o GitHub pausa tarefas agendadas após 60 dias sem atividade no repositório.
 
 ## Estrutura
 
@@ -104,7 +108,7 @@ src/
   lib/comunidade.ts    enviar gravações e baixar o acervo da comunidade
   lib/pacote.ts        formato e validação dos pacotes de sinais (app, API e scripts)
   lib/codec.ts         compactação int8 + base64 (~5,6 KB por exemplo)
-api/contribuir.ts      função gratuita (Vercel) que abre o pedido de aprovação
+api/                   funções gratuitas (Vercel): contribuir (recebe) e pendentes (lista para o GitHub)
 scripts/               montar acervo público, verificar contribuições, copiar assets
 acervo/                base pública + contribuições aprovadas (dados abertos, CC BY 4.0)
   screens/             Início, Ver, Ouvir, Culto, Ensinar, Sobre

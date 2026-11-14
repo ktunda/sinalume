@@ -1,0 +1,65 @@
+# A cada hora, busca as gravações enviadas pelos voluntários (função no Vercel) e abre um pedido de
+# aprovação (Pull Request) para cada envio, já com o relatório da verificação automática.
+# Quem coordena só lê o relatório e clica em "Merge".
+#
+# Requisitos (uma vez): variável do repositório API_SINALUME = https://<projeto>.vercel.app
+# e, em Settings > Actions > General, "Allow GitHub Actions to create and approve pull requests".
+name: Importar contribuições de sinais
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: importar-contribuicoes
+  cancel-in-progress: false
+
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+    if: vars.API_SINALUME != ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Buscar envios novos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_SINALUME: ${{ vars.API_SINALUME }}
+        run: |
+          gh pr list --state all --limit 1000 --json headRefName --jq '.[].headRefName' > ja-feitos.txt
+          git branch -r | sed 's#origin/##; s/^ *//' >> ja-feitos.txt
+          npx tsx scripts/importar-contribuicoes.ts ja-feitos.txt > novos.txt
+          echo "Novos envios:"; cat novos.txt
+      - name: Abrir um pedido de aprovação por envio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "sinalume-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh label create "contribuição" --color F4A51C --description "Sinais enviados por voluntários" 2>/dev/null || true
+          while read -r id; do
+            [ -z "$id" ] && continue
+            ramo="contribuicao/$id"
+            destino="acervo/contribuicoes/${id:0:7}/$id.json"
+            git checkout -q -B "$ramo" origin/${{ github.event.repository.default_branch }}
+            mkdir -p "$(dirname "$destino")"
+            cp ".importar/$id.json" "$destino"
+            git add "$destino"
+            git commit -q -m "Contribuição de sinais $id"
+            git push -q origin "$ramo"
+            cp ".importar/$id.md" corpo.md
+            npx tsx scripts/validar-contribuicao.ts "$destino" >> corpo.md || true
+            gh pr create --head "$ramo" --base ${{ github.event.repository.default_branch }} \
+              --title "$(cat ".importar/$id.titulo")" --body-file corpo.md --label "contribuição"
+          done < novos.txt
