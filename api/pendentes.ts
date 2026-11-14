@@ -4,9 +4,9 @@
 //   GET /api/pendentes?id=...               conteúdo de um item
 // Os dados são abertos: pontos das mãos (CC BY 4.0) e textos que viram issues públicas. Sem IP nem contato.
 import { get, list } from '@vercel/blob'
-import { caminhoDoEnvio, RE_ID } from './_lib/contribuicao'
-import { ACESSO_BLOB, cors, json } from './_lib/http'
-import { caminhoDaSugestao, RE_ID_SUGESTAO } from './_lib/sugestao'
+import { caminhoDoEnvio, RE_ID } from './_lib/contribuicao.js'
+import { ACESSO_BLOB, cors, json } from './_lib/http.js'
+import { caminhoDaSugestao, RE_ID_SUGESTAO } from './_lib/sugestao.js'
 
 const DIAS = 45 // os arquivos se apagam sozinhos no Blob após 60 dias (ttlDays)
 

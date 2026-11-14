@@ -1,6 +1,6 @@
 // Formato dos pacotes de sinais trocados entre celulares, enviados à comunidade e publicados no acervo.
 // Código puro (sem navegador): usado pelo app, pela função de envio (api/) e pelos scripts do GitHub.
-import { codificar, decodificar, DIM_CODEC, ESCALA, QUADROS } from './codec'
+import { codificar, decodificar, DIM_CODEC, ESCALA, QUADROS } from './codec.js'
 
 export const UFS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',

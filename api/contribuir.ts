@@ -2,8 +2,8 @@
 // e guarda no Vercel Blob. Não precisa de nenhum token configurado à mão: ao conectar um Blob store
 // ao projeto, o Vercel injeta BLOB_READ_WRITE_TOKEN sozinho.
 import { put } from '@vercel/blob'
-import { processarContribuicao } from './_lib/contribuicao'
-import { ACESSO_BLOB, cors, json } from './_lib/http'
+import { processarContribuicao } from './_lib/contribuicao.js'
+import { ACESSO_BLOB, cors, json } from './_lib/http.js'
 
 const tentativas = new Map<string, number[]>()
 const LIMITE_POR_HORA = 6

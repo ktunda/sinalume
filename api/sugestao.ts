@@ -1,7 +1,7 @@
 // Recebe sugestões de melhoria, avisos de erro e pedidos de remoção (sem conta, sem dados pessoais).
 import { put } from '@vercel/blob'
-import { ACESSO_BLOB, cors, json } from './_lib/http'
-import { processarSugestao } from './_lib/sugestao'
+import { ACESSO_BLOB, cors, json } from './_lib/http.js'
+import { processarSugestao } from './_lib/sugestao.js'
 
 const tentativas = new Map<string, number[]>()
 const LIMITE_POR_HORA = 10

@@ -1,6 +1,6 @@
 // Sugestões de melhoria, avisos de erro e pedidos de remoção enviados pelo app.
 // Ficam guardados no Vercel Blob; a automação do GitHub transforma cada um em uma "issue" pública.
-import type { Resposta, Salvar } from './contribuicao'
+import type { Resposta, Salvar } from './contribuicao.js'
 
 export const TIPOS_SUGESTAO = {
   melhoria: 'Ideia de melhoria',

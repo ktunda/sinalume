@@ -1,8 +1,8 @@
 // Lógica da função de contribuição (testável sem Vercel).
 // Valida o envio e guarda um pacote limpo. Quem leva ao GitHub é a automação
 // .github/workflows/importar-contribuicoes.yml, que busca os envios e abre um pedido de aprovação para cada um.
-import { criarPacote, LIMITES, lerPacote } from '../../src/lib/pacote'
-import { consentimentoValido, registroConsentimento } from '../../src/lib/termo'
+import { criarPacote, LIMITES, lerPacote } from '../../src/lib/pacote.js'
+import { consentimentoValido, registroConsentimento } from '../../src/lib/termo.js'
 
 export type Resposta = { status: number; corpo: Record<string, unknown> }
 export type Salvar = (caminho: string, conteudo: string) => Promise<void>
