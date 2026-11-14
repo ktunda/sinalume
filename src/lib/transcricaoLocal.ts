@@ -2,6 +2,31 @@
 // Usado quando o navegador não transcreve fala (alguns iPhones, Firefox), quando a fala do navegador falha
 // ou sem internet. Mesmo comportamento no iPhone e no Android.
 
+export type Qualidade = 'preciso' | 'leve'
+export const TAMANHO_MB: Record<Qualidade, number> = { preciso: 249, leve: 77 }
+const CHAVE_QUALIDADE = 'sinalume:qualidade-fala'
+
+export function qualidadePreferida(): Qualidade {
+  try {
+    return localStorage.getItem(CHAVE_QUALIDADE) === 'leve' ? 'leve' : 'preciso'
+  } catch {
+    return 'preciso'
+  }
+}
+
+export function definirQualidade(q: Qualidade) {
+  try {
+    localStorage.setItem(CHAVE_QUALIDADE, q)
+  } catch {
+    /* ignore */
+  }
+  // troca de modelo: o próximo uso baixa/carrega o novo
+  pronto = false
+  carregandoModelo = null
+  arquivos.clear()
+  avisarProgresso()
+}
+
 export interface ProgressoModelo {
   carregados: number
   total: number
@@ -81,7 +106,7 @@ export function prepararModelo(): Promise<void> {
       }
     }
     w.addEventListener('message', f)
-    w.postMessage({ tipo: 'carregar' })
+    w.postMessage({ tipo: 'carregar', qualidade: qualidadePreferida() })
   })
   return carregandoModelo
 }
@@ -90,7 +115,7 @@ export function transcrever(audio16k: Float32Array): Promise<string> {
   const id = proximoId++
   return new Promise((ok, falha) => {
     pendentes.set(id, { ok, falha })
-    obterWorker().postMessage({ tipo: 'transcrever', id, audio: audio16k }, [audio16k.buffer])
+    obterWorker().postMessage({ tipo: 'transcrever', id, audio: audio16k, qualidade: qualidadePreferida() }, [audio16k.buffer])
   })
 }
 

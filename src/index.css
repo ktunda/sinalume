@@ -211,3 +211,5 @@ main { flex: 1; }
 .instalar img { border-radius: 12px; flex-shrink: 0; }
 .instalar p { margin: 4px 0 8px; font-size: .95rem; }
 .instalar__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+.motor__qualidade { display: flex; flex-direction: column; gap: 6px; font-size: .9rem; margin-bottom: 10px; }
+.motor__qualidade select { min-height: 44px; border: 2px solid var(--borda); border-radius: 10px; padding: 0 8px; font: inherit; }

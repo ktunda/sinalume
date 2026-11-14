@@ -4,18 +4,26 @@
 // A biblioteca vem do CDN gratuito jsDelivr e o modelo do Hugging Face; o navegador guarda os dois em cache.
 
 const URL_TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2'
-const MODELO = 'Xenova/whisper-base'
+// "preciso" (whisper-small, ~249 MB) acerta bem português; "leve" (whisper-base, ~77 MB) erra mais
+const MODELOS = { preciso: 'Xenova/whisper-small', leve: 'Xenova/whisper-base' } as const
+type Qualidade = keyof typeof MODELOS
 
 type Mensagem =
-  | { tipo: 'carregar' }
-  | { tipo: 'transcrever'; id: number; audio: Float32Array }
+  | { tipo: 'carregar'; qualidade: Qualidade }
+  | { tipo: 'transcrever'; id: number; audio: Float32Array; qualidade: Qualidade }
 
 type Transcritor = (audio: Float32Array, opcoes: Record<string, unknown>) => Promise<{ text: string }>
 
 let transcritor: Transcritor | null = null
 let carregando: Promise<Transcritor> | null = null
+let qualidadeAtual: Qualidade | null = null
 
-async function carregar(): Promise<Transcritor> {
+async function carregar(qualidade: Qualidade): Promise<Transcritor> {
+  if (qualidade !== qualidadeAtual) {
+    transcritor = null
+    carregando = null
+    qualidadeAtual = qualidade
+  }
   if (transcritor) return transcritor
   if (carregando) return carregando
   carregando = (async () => {
@@ -27,7 +35,7 @@ async function carregar(): Promise<Transcritor> {
     const progresso = (p: { status?: string; file?: string; progress?: number; loaded?: number; total?: number }) =>
       self.postMessage({ tipo: 'progresso', ...p })
     const tentar = (device: 'webgpu' | 'wasm') =>
-      tf.pipeline('automatic-speech-recognition', MODELO, { dtype: 'q8', device, progress_callback: progresso })
+      tf.pipeline('automatic-speech-recognition', MODELOS[qualidade], { dtype: 'q8', device, progress_callback: progresso })
     try {
       transcritor = 'gpu' in navigator ? await tentar('webgpu') : await tentar('wasm')
     } catch {
@@ -41,7 +49,7 @@ async function carregar(): Promise<Transcritor> {
 self.onmessage = async (e: MessageEvent<Mensagem>) => {
   const m = e.data
   try {
-    const t = await carregar()
+    const t = await carregar(m.qualidade ?? 'preciso')
     if (m.tipo === 'carregar') {
       self.postMessage({ tipo: 'pronto' })
       return

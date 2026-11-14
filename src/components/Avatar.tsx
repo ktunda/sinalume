@@ -19,9 +19,16 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
   useEffect(() => {
     const parar = aoMudarEstado(setEstado)
     const el = ref.current
-    if (el) montarAvatar(el)
+    // o avatar (Unity) é pesado: carrega depois que a tela já responde ao toque
+    const agenda = (window as unknown as { requestIdleCallback?: (f: () => void, o?: { timeout: number }) => number }).requestIdleCallback
+    let id: number | undefined
+    const montar = () => el && montarAvatar(el)
+    if (agenda) id = agenda(montar, { timeout: 800 })
+    else id = window.setTimeout(montar, 300)
     return () => {
       parar()
+      const cancela = (window as unknown as { cancelIdleCallback?: (i: number) => void }).cancelIdleCallback
+      if (id !== undefined) (cancela ?? window.clearTimeout)(id)
       if (el) desmontarAvatar(el)
     }
   }, [])
@@ -34,7 +41,7 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
 
   return (
     <div className={`avatar ${compacto ? 'avatar--compacto' : ''}`}>
-      <div ref={ref} className="avatar__palco" aria-label="Avatar sinalizando em Libras" />
+      <div ref={ref} className="avatar__palco" role="region" aria-label="Avatar sinalizando em Libras" />
       {estado === 'carregando' && (
         <div className="avatar__aviso avatar__aviso--cobre">
           <span className="girando" aria-hidden />
@@ -46,10 +53,10 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
         <div className="avatar__aviso">Não foi possível carregar o avatar. A legenda continua funcionando.</div>
       )}
       <div className="avatar__controles">
-        <button type="button" onClick={repetir} aria-label="Repetir sinalização">
+        <button type="button" onClick={repetir}>
           ↺ Repetir
         </button>
-        <button type="button" onClick={trocarVelocidade} aria-label="Mudar velocidade do avatar">
+        <button type="button" onClick={trocarVelocidade}>
           Velocidade {velocidade.toString().replace('.', ',')}×
         </button>
       </div>

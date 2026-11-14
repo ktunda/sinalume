@@ -77,7 +77,6 @@ function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void
   return (
     <div className="tela tela--inicio">
       <p className="inicio__chamada">Conversa entre surdos e ouvintes, de graça e no seu celular.</p>
-      <InstalarApp />
       <button type="button" className="cartao cartao--ver" onClick={() => ir('ver')}>
         <span className="cartao__icone" aria-hidden>🤟</span>
         <span>
@@ -99,6 +98,7 @@ function Inicio({ ir }: { ir: (r: Rota, params?: Record<string, string>) => void
           <small>Legenda grande e Libras no projetor</small>
         </span>
       </button>
+      <InstalarApp />
       <div className="inicio__secundarios">
         <button type="button" onClick={() => ir('ensinar')}>✋ Ensinar sinais</button>
         <button type="button" onClick={() => ir('sinais')}>📋 Sinais que temos</button>

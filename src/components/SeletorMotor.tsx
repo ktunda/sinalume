@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
 import { suporta } from '../lib/plataforma'
-import { aoProgressoModelo, modeloPronto, prepararModelo, type ProgressoModelo } from '../lib/transcricaoLocal'
+import {
+  aoProgressoModelo,
+  definirQualidade,
+  modeloPronto,
+  prepararModelo,
+  qualidadePreferida,
+  TAMANHO_MB,
+  type ProgressoModelo,
+  type Qualidade,
+} from '../lib/transcricaoLocal'
 import { definirMotor, motorEfetivo, motorPreferido, type Motor } from '../lib/voz'
 
 /** Escolha do motor de transcrição + baixar o modelo do aparelho para usar sem internet. */
@@ -8,6 +17,7 @@ export function SeletorMotor() {
   const [motor, setMotor] = useState<Motor>(motorPreferido)
   const [progresso, setProgresso] = useState<ProgressoModelo>({ carregados: 0, total: 0, pronto: modeloPronto() })
   const [erro, setErro] = useState('')
+  const [qualidade, setQualidade] = useState<Qualidade>(qualidadePreferida)
   useEffect(() => aoProgressoModelo(setProgresso), [])
 
   const temNavegador = suporta.reconhecimentoNavegador()
@@ -46,9 +56,23 @@ export function SeletorMotor() {
           }}
         />
         <span>
-          <strong>No aparelho</strong> — funciona sem internet e igual no iPhone e no Android. Baixa cerca de 80 MB na
-          primeira vez; a legenda aparece ao terminar cada frase.
+          <strong>No aparelho</strong> — funciona sem internet e igual no iPhone e no Android. Baixa o modelo uma vez;
+          a legenda aparece ao terminar cada frase.
         </span>
+      </label>
+      <label className="motor__qualidade">
+        Modelo do aparelho:
+        <select
+          value={qualidade}
+          onChange={(e) => {
+            const q = e.target.value as Qualidade
+            setQualidade(q)
+            definirQualidade(q)
+          }}
+        >
+          <option value="preciso">Preciso — {TAMANHO_MB.preciso} MB (recomendado, use Wi-Fi)</option>
+          <option value="leve">Leve — {TAMANHO_MB.leve} MB (erra mais)</option>
+        </select>
       </label>
       {!progresso.pronto && (
         <button
