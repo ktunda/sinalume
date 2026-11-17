@@ -44,6 +44,8 @@
 - **Limite por IP:** vale por instância do Vercel. A proteção principal é a revisão humana de cada envio.
 - **Falhas em ferramentas de build:** `workbox-build`, `glob` e `minimatch` têm falhas conhecidas, mas só rodam na hora de montar o site e não chegam a quem usa o app.
 
+- **Celulares antigos (desde 17/11/2026):** o app gera uma versão compatível para Android 7+ e iOS 12+. Para isso, a CSP libera os 4 pequenos scripts do `@vitejs/plugin-legacy` por hash e aceita `data:` em `script-src`, que é usado no teste que escolhe entre a versão moderna e a compatível. O risco é baixo, porque o app não tem nenhum ponto de injeção de HTML.
+
 ## Como verificar
 
 ```bash

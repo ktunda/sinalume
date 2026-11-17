@@ -1,3 +1,4 @@
+import legacy, { cspHashes } from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -8,7 +9,9 @@ function politicaSeguranca(apiBase: string) {
   const api = new URL(apiBase).origin
   return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob:",
+    // os hashes liberam só os pequenos scripts do modo de compatibilidade com celulares antigos;
+    // data: é usado pelo teste que decide entre a versão moderna e a compatível (plugin-legacy)
+    `script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: ${cspHashes.map((h) => `'sha256-${h}'`).join(' ')}`,
     "worker-src 'self' blob:",
     `connect-src 'self' blob: data: ${api} https://traducao2.vlibras.gov.br https://dicionario2.vlibras.gov.br https://storage.googleapis.com https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co`,
     "img-src 'self' data: blob:",
@@ -29,6 +32,11 @@ export default defineConfig({
   worker: { format: 'es' },
   plugins: [
     react(),
+    // celulares antigos (Android 7+, iPhone com iOS 12+): gera uma versão compatível, usada só por eles
+    legacy({
+      targets: ['defaults', 'Android >= 7', 'Chrome >= 64', 'iOS >= 12', 'Safari >= 12', 'Samsung >= 9'],
+      modernPolyfills: true,
+    }),
     {
       name: 'sinalume-seguranca',
       transformIndexHtml: () => [
