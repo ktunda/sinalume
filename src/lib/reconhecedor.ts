@@ -113,6 +113,16 @@ export class ClassificadorDTW implements Classificador {
   }
 }
 
+export interface OpcoesSegmentador {
+  semMaoMs: number
+  paradoMs: number
+  minQuadros: number
+  limiarMovimento: number
+  /** só termina o sinal quando as mãos saem do quadro (usado na gravação) */
+  soSemMao: boolean
+  maxQuadros: number
+}
+
 /**
  * Corta o fluxo contínuo de quadros em sinais.
  * Um sinal termina quando as mãos saem do quadro ou ficam paradas por um tempo.
@@ -125,14 +135,11 @@ export class Segmentador {
   private emMovimento = false
 
   private aoTerminarSinal: (sequencia: number[][]) => void
-  private opcoes: { semMaoMs: number; paradoMs: number; minQuadros: number; limiarMovimento: number }
+  private opcoes: OpcoesSegmentador
 
-  constructor(
-    aoTerminarSinal: (sequencia: number[][]) => void,
-    opcoes = { semMaoMs: 350, paradoMs: 700, minQuadros: 8, limiarMovimento: 0.02 },
-  ) {
+  constructor(aoTerminarSinal: (sequencia: number[][]) => void, opcoes: Partial<OpcoesSegmentador> = {}) {
     this.aoTerminarSinal = aoTerminarSinal
-    this.opcoes = opcoes
+    this.opcoes = { semMaoMs: 350, paradoMs: 900, minQuadros: 8, limiarMovimento: 0.02, soSemMao: false, maxQuadros: 120, ...opcoes }
   }
 
   /** Cancela o sinal em andamento. */
@@ -167,9 +174,10 @@ export class Segmentador {
       this.anterior = v
       this.buffer.push(v)
       // mão parada depois de ter se movido: fim do sinal
-      if (this.emMovimento && q.t - this.paradoDesde > this.opcoes.paradoMs) this.fechar()
+      // (na gravação, só fecha quando as mãos descem: sinais compostos como BOM DIA têm pausa no meio)
+      if (!this.opcoes.soSemMao && this.emMovimento && q.t - this.paradoDesde > this.opcoes.paradoMs) this.fechar()
       // trava de segurança: sinais isolados raramente passam de 4 s
-      if (this.buffer.length > 120) this.fechar()
+      if (this.buffer.length > this.opcoes.maxQuadros) this.fechar()
     } else if (this.buffer.length > 0 && q.t - this.ultimoComMao > this.opcoes.semMaoMs) {
       this.fechar()
     }

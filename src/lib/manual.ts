@@ -53,13 +53,15 @@ export const MANUAL: SecaoManual[] = [
       'A pessoa faz um sinal e abaixa as mãos (ou faz uma pausa). O sinal entra na frase.',
       'Depois de uma pausa de 2,5 s, o app fala a frase. Use 🔊 Falar para repetir.',
       'Use ⌫ Apagar sinal para corrigir o último sinal, ou Nova frase para recomeçar.',
+      'Se o app ficar em dúvida, ele pergunta: toque em "Sim, é esse" ou em "Não, era outro" e escolha o sinal certo. O app guarda essa correção e aprende.',
+      'Se ele errou um sinal que já entrou na frase, toque em "Errou?" e escolha o certo.',
     ],
     dicas: [
+      'Em "Detalhes do reconhecimento" você vê o que o app achou de cada tentativa e pode enviar o relatório à equipe (só números, sem vídeo).',
       'Cada sinal gravado vale para as duas mãos: quem é canhoto também é reconhecido.',
-      'Se o app ainda não conhece sinais, toque em "Baixar sinais da comunidade".',
+      'Grave o sinal do mesmo jeito que você faz na conversa: o app compara com as suas gravações.',
       'O botão ⇄ troca entre a câmera de trás e a da frente.',
       'O vídeo nunca sai do celular. Funciona sem internet depois do primeiro uso.',
-      'Se aparecer "Não entendi esse sinal", peça para repetir mais devagar.',
     ],
   },
   {
@@ -123,7 +125,7 @@ export const MANUAL: SecaoManual[] = [
       'Voluntários gravam sinais para o Sinalume aprender. Só os pontos das mãos são guardados, nunca o vídeo.',
     passos: [
       'Digite qualquer sinal (inclusive regional ou da sua igreja) e toque em Gravar, ou escolha um da lista.',
-      'Faça o sinal com boa luz, mãos e rosto aparecendo, e abaixe as mãos no fim.',
+      'Faça o sinal inteiro com boa luz, mãos e rosto aparecendo, e só abaixe as mãos no fim. Em sinais de duas partes, como bom dia, não abaixe as mãos no meio.',
       'Repita 5 vezes. O app avisa a cada gravação.',
       'Toque em "Enviar minhas gravações", leia o Termo de consentimento, marque as duas confirmações e envie.',
       'Em "Meus envios" aparecem o código e a chave secreta de remoção de cada envio. Anote a chave se for trocar de celular.',

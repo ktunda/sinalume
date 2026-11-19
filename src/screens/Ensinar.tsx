@@ -65,7 +65,7 @@ export function Ensinar() {
           return prox
         })
         atualizar()
-      }),
+      }, { soSemMao: true, maxQuadros: 150 }),
     [glosa, atualizar],
   )
 

@@ -81,7 +81,7 @@ main { flex: 1; }
 /* Resultado do reconhecimento */
 .resultado { background: #fff; border-radius: 16px; padding: 16px; border: 2px solid var(--borda); }
 .resultado__frase { font-size: 1.6rem; font-weight: 800; margin: 0; color: var(--azul); }
-.resultado__duvida { color: var(--perigo); font-weight: 700; margin: 8px 0 0; }
+.resultado__duvida { color: var(--texto); font-weight: 600; margin: 8px 0 0; }
 .resultado__ultimo { color: var(--texto-suave); margin: 8px 0 0; font-size: .95rem; }
 
 /* Avatar */
@@ -292,3 +292,16 @@ main { flex: 1; }
 .botao-link { display: flex; justify-content: center; align-items: center; min-height: 52px; border-radius: 14px; text-decoration: none; color: #fff; background: var(--azul); font-weight: 800; margin-top: 8px; }
 .resultado__duvida { display: flex; flex-direction: column; gap: 6px; }
 .resultado__duvida p { margin: 0; }
+/* reconhecimento: confirmar, corrigir e diagnóstico */
+.ver__botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ver__botoes button { flex: 1 1 140px; }
+.ver__corrigir { display: flex; flex-direction: column; gap: 6px; font-weight: 700; color: var(--texto); }
+.ver__corrigir select { font: inherit; font-weight: 400; min-height: 48px; border: 2px solid var(--borda); border-radius: 12px; padding: 8px 10px; background: #fff; }
+.resultado__ultimo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ver__errou { min-height: 40px; padding: 0 12px; font-size: .9rem; }
+.ver__diagnostico { background: #fff; border: 2px solid var(--borda); border-radius: 16px; padding: 12px 16px; }
+.ver__diagnostico summary { cursor: pointer; font-weight: 700; color: var(--azul); min-height: 32px; }
+.ver__diagnostico ol { padding-left: 20px; margin: 8px 0; font-size: .9rem; }
+.ver__diagnostico li + li { margin-top: 8px; }
+.ver--grande .ver__diagnostico { background: #111; border-color: #333; color: #e5e7eb; }
+.ver--grande .resultado__duvida, .ver--grande .ver__corrigir { color: #fff; }
