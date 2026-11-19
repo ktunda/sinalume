@@ -55,6 +55,7 @@ export const MANUAL: SecaoManual[] = [
       'Use ⌫ Apagar sinal para corrigir o último sinal, ou Nova frase para recomeçar.',
     ],
     dicas: [
+      'Cada sinal gravado vale para as duas mãos: quem é canhoto também é reconhecido.',
       'Se o app ainda não conhece sinais, toque em "Baixar sinais da comunidade".',
       'O botão ⇄ troca entre a câmera de trás e a da frente.',
       'O vídeo nunca sai do celular. Funciona sem internet depois do primeiro uso.',

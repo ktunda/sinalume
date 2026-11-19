@@ -77,8 +77,10 @@ export class ClassificadorDTW implements Classificador {
   private exemplos: Exemplo[]
   limiarDistancia: number
 
-  constructor(exemplos: Exemplo[], limiarDistancia = 1.6) {
-    this.exemplos = exemplos
+  constructor(exemplos: Exemplo[], limiarDistancia = 1.6, comEspelho = true) {
+    // cada gravação vale também espelhada: quem sinaliza com a outra mão (canhoto) é reconhecido
+    // sem precisar gravar de novo
+    this.exemplos = comEspelho ? exemplos.concat(exemplos.map((e) => ({ ...e, quadros: espelhar(e.quadros) }))) : exemplos
     this.limiarDistancia = limiarDistancia
   }
 
@@ -181,3 +183,15 @@ export class Segmentador {
 }
 
 export { DIM }
+
+const POR_MAO = 21 * 3 + 3
+
+/** Espelha um sinal: troca mão direita e esquerda e inverte o eixo horizontal. */
+export function espelhar(quadros: number[][]): number[][] {
+  return quadros.map((q) => {
+    if (q.length !== 2 * POR_MAO) return q
+    const virar = (bloco: number[]) =>
+      bloco.map((v, i) => (i < 21 * 3 ? (i % 3 === 0 ? -v : v) : i === 21 * 3 ? -v : v))
+    return [...virar(q.slice(POR_MAO)), ...virar(q.slice(0, POR_MAO))]
+  })
+}
