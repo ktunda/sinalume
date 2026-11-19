@@ -56,7 +56,11 @@ export function Ensinar() {
         await adicionarExemplo(glosa, seq)
         setGravadas((n) => {
           const prox = n + 1
-          setMensagem(prox >= REPETICOES ? `Pronto! "${glosa}" gravado ${prox} vezes.` : `Boa! ${prox} de ${REPETICOES}. Faça de novo.`)
+          setMensagem(
+            prox >= REPETICOES
+              ? `Pronto! "${glosa}" gravado ${prox} vezes. Já dá para testar em "Surdo sinaliza" neste celular.`
+              : `Boa! ${prox} de ${REPETICOES}. Faça de novo.`,
+          )
           if (prox >= REPETICOES) setGlosa(null)
           return prox
         })
@@ -125,6 +129,11 @@ export function Ensinar() {
 
       <div className="aviso-card" aria-live="polite">
         <p>{mensagem || 'Digite ou escolha um sinal para gravar. Use boa luz e deixe mãos e rosto aparecendo.'}</p>
+        {mensagem.startsWith('Pronto!') && (
+          <a className="botao-principal botao-link" href="#/ver">
+            Testar agora em Surdo sinaliza
+          </a>
+        )}
         {glosa && (
           <button type="button" onClick={() => setGlosa(null)}>
             Cancelar

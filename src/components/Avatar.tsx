@@ -3,7 +3,9 @@ import {
   aoMudarEstado,
   definirVelocidade,
   desmontarAvatar,
+  escolherAvatar,
   montarAvatar,
+  motivoAvatarDesligado,
   repetir,
   type EstadoAvatar,
   type Velocidade,
@@ -15,8 +17,10 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const [estado, setEstado] = useState<EstadoAvatar>('carregando')
   const [velocidade, setVel] = useState<Velocidade>(1.0)
+  const [desligado, setDesligado] = useState(motivoAvatarDesligado)
 
   useEffect(() => {
+    if (desligado) return
     const parar = aoMudarEstado(setEstado)
     const el = ref.current
     // o avatar (Unity) é pesado: carrega depois que a tela já responde ao toque
@@ -31,7 +35,31 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
       if (id !== undefined) (cancela ?? window.clearTimeout)(id)
       if (el) desmontarAvatar(el)
     }
-  }, [])
+  }, [desligado])
+
+  if (desligado) {
+    return (
+      <div className={`avatar avatar--desligado ${compacto ? 'avatar--compacto' : ''}`}>
+        <div className="avatar__aviso">
+          <strong>Avatar desligado</strong>
+          {desligado === 'travou'
+            ? 'Da última vez o avatar travou este celular, então deixamos só a legenda, que funciona normalmente.'
+            : desligado === 'pouca-memoria'
+              ? 'Este celular tem pouca memória para o avatar 3D. A legenda funciona normalmente.'
+              : 'Você escolheu usar só a legenda.'}
+          <button
+            type="button"
+            onClick={() => {
+              escolherAvatar(true)
+              setDesligado(null)
+            }}
+          >
+            Ligar o avatar mesmo assim
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const trocarVelocidade = () => {
     const prox = VELOCIDADES[(VELOCIDADES.indexOf(velocidade) + 1) % VELOCIDADES.length]
@@ -51,6 +79,18 @@ export function Avatar({ compacto = false }: { compacto?: boolean }) {
       )}
       {estado === 'erro' && (
         <div className="avatar__aviso">Não foi possível carregar o avatar. A legenda continua funcionando.</div>
+      )}
+      {estado === 'pronto' && (
+        <button
+          type="button"
+          className="avatar__desligar"
+          onClick={() => {
+            escolherAvatar(false)
+            location.reload() // libera a memória do avatar
+          }}
+        >
+          Celular lento? Usar só a legenda
+        </button>
       )}
       <div className="avatar__controles">
         <button type="button" onClick={repetir}>

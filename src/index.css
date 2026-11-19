@@ -284,3 +284,11 @@ main { flex: 1; }
 .ajuda__dicas li + li { margin-top: 4px; }
 .ajuda__voltar { align-self: flex-start; background: transparent; border: 0; color: var(--azul); font-weight: 700; padding: 6px 0; min-height: 44px; }
 .ajuda__pdf { display: flex; justify-content: center; align-items: center; min-height: 52px; border: 2px solid var(--azul); border-radius: 14px; color: var(--azul); font-weight: 800; text-decoration: none; margin-top: 8px; }
+
+/* avatar desligado (celulares fracos) */
+.avatar--desligado .avatar__aviso { position: static; display: flex; flex-direction: column; gap: 10px; text-align: left; padding: 16px; }
+.avatar--desligado .avatar__aviso strong { color: var(--azul); font-size: 1.05rem; }
+.avatar__desligar { background: transparent; border: 0; color: var(--texto-suave); font-size: .9rem; text-decoration: underline; min-height: 40px; padding: 4px 8px; }
+.botao-link { display: flex; justify-content: center; align-items: center; min-height: 52px; border-radius: 14px; text-decoration: none; color: #fff; background: var(--azul); font-weight: 800; margin-top: 8px; }
+.resultado__duvida { display: flex; flex-direction: column; gap: 6px; }
+.resultado__duvida p { margin: 0; }

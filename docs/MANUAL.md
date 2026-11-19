@@ -43,11 +43,12 @@ O Sinalume não precisa de loja de aplicativos: ele é instalado pelo próprio n
 
 A pessoa ouvinte aponta a câmera para a pessoa surda. O app lê as mãos no próprio celular, reconhece cada sinal e monta a frase em português, na tela e em voz.
 
-1. Na primeira vez, permita o uso da câmera.
-2. Enquadre as mãos e o rosto da pessoa surda, com boa luz. O selo verde "Mãos detectadas" confirma.
-3. A pessoa faz um sinal e abaixa as mãos (ou faz uma pausa). O sinal entra na frase.
-4. Depois de uma pausa de 2,5 s, o app fala a frase. Use 🔊 Falar para repetir.
-5. Use ⌫ Apagar sinal para corrigir o último sinal, ou Nova frase para recomeçar.
+1. Antes, o app precisa conhecer os sinais: grave cada um 5 vezes em Ensinar sinais (ou baixe os da comunidade). Ele só reconhece sinais que já aprendeu.
+2. Na primeira vez, permita o uso da câmera.
+3. Enquadre as mãos e o rosto da pessoa surda, com boa luz. O selo verde "Mãos detectadas" confirma.
+4. A pessoa faz um sinal e abaixa as mãos (ou faz uma pausa). O sinal entra na frase.
+5. Depois de uma pausa de 2,5 s, o app fala a frase. Use 🔊 Falar para repetir.
+6. Use ⌫ Apagar sinal para corrigir o último sinal, ou Nova frase para recomeçar.
 
 **Dicas**
 
@@ -173,8 +174,9 @@ O que fazer quando algo não funciona.
 1. "Não foi possível iniciar a câmera": permita a câmera nas configurações do navegador e recarregue.
 2. "Não ouvi nada": fale mais perto do celular ou digite o texto.
 3. O avatar não aparece: verifique a internet; a legenda continua funcionando.
-4. O app não reconheceu o sinal: talvez ainda não tenha sido gravado — grave do seu jeito em Ensinar sinais.
-5. Algo diferente disso: mande pela aba Sugestões, opção "Algo não funcionou".
+4. O navegador mostrou uma página de erro ao usar o avatar: o celular ficou sem memória. Ao abrir de novo, o app deixa o avatar desligado e usa só a legenda; dá para ligar de novo em "Ligar o avatar mesmo assim".
+5. O app não reconheceu o sinal: ele só reconhece sinais já gravados neste celular ou baixados da comunidade. Grave o sinal 5 vezes em Ensinar sinais e teste de novo.
+6. Algo diferente disso: mande pela aba Sugestões, opção "Algo não funcionou".
 
 **Dicas**
 

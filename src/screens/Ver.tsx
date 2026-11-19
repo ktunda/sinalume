@@ -38,8 +38,9 @@ export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: bo
     setBaixando(true)
     setErroAcervo('')
     try {
-      await baixarAcervo()
+      const r = await baixarAcervo()
       await recarregar()
+      if (r.glosas === 0) setErroAcervo('A base da comunidade ainda não tem sinais aprovados. Grave os seus em "Gravar meus sinais": em poucos minutos o app já reconhece você.')
     } catch (e) {
       setErroAcervo((e as Error).message)
     } finally {
@@ -52,7 +53,7 @@ export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: bo
   const segmentador = useMemo(
     () =>
       new Segmentador((seq) => {
-        if (!classificador) return
+        if (!classificador || classificador.glosasConhecidas.length === 0) return
         const p = classificador.classificar(seq)
         setUltimo(p)
         if (!p || p.confianca < CONFIANCA_MINIMA) {
@@ -95,20 +96,39 @@ export function Ver({ ir, grande = false }: { ir: (r: Rota) => void; grande?: bo
 
       {classificador && conhecidos === 0 && (
         <div className="aviso-card">
-          <p>O Sinalume ainda não conhece nenhum sinal neste celular. Baixe os sinais da comunidade ou grave os seus.</p>
-          <button type="button" className="botao-principal" onClick={baixar} disabled={baixando}>
-            {baixando ? 'Baixando…' : '⬇ Baixar sinais da comunidade'}
-          </button>
-          {erroAcervo && <p className="erro">{erroAcervo}</p>}
-          <button type="button" onClick={() => ir('ensinar')}>
+          <p>
+            <strong>O app ainda não conhece nenhum sinal neste celular.</strong> Ele aprende com gravações: grave um
+            sinal (por exemplo, “bom dia”) 5 vezes em Ensinar sinais e volte aqui. Também dá para baixar os sinais
+            aprovados da comunidade.
+          </p>
+          <button type="button" className="botao-principal" onClick={() => ir('ensinar')}>
             Gravar meus sinais
           </button>
+          <button type="button" onClick={baixar} disabled={baixando}>
+            {baixando ? 'Baixando…' : '⬇ Baixar sinais da comunidade'}
+          </button>
+          {erroAcervo && <p className="nota">{erroAcervo}</p>}
         </div>
       )}
 
       <div className="resultado" aria-live="polite">
         <p className={`resultado__frase ${frase ? '' : 'resultado__frase--vazia'}`}>{frase || 'Os sinais reconhecidos viram frase aqui.'}</p>
-        {duvida && <p className="resultado__duvida">Não entendi esse sinal. Pode repetir?</p>}
+        {duvida && conhecidos > 0 && (
+          <div className="resultado__duvida">
+            <p>Não reconheci esse sinal. Pode repetir mais devagar?</p>
+            <p className="nota">
+              Este celular conhece {conhecidos} {conhecidos === 1 ? 'sinal' : 'sinais'}:{' '}
+              {classificador?.glosasConhecidas
+                .slice(0, 12)
+                .map((g) => VOCAB_POR_GLOSA.get(g)?.texto ?? g.toLowerCase().replace(/-/g, ' '))
+                .join(', ')}
+              {conhecidos > 12 ? '…' : '.'} Se for outro, ensine o app.
+            </p>
+            <button type="button" onClick={() => ir('ensinar')}>
+              Gravar um sinal novo
+            </button>
+          </div>
+        )}
         {ultimo && !duvida && (
           <p className="resultado__ultimo">
             Último sinal: <strong>{VOCAB_POR_GLOSA.get(ultimo.glosa)?.texto ?? ultimo.glosa}</strong> (

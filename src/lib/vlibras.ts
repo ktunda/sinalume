@@ -47,7 +47,64 @@ export function aoFalharTraducao(f: (msg: string) => void): () => void {
   }
 }
 
+// ---- proteção para celulares fracos -------------------------------------------------------
+// O avatar (Unity, ~256 MB de memória) pode derrubar a aba em celulares com pouca memória:
+// o navegador mostra uma página de erro. Marcamos quando o avatar está trabalhando; se o app
+// reabrir com a marca ainda lá, a última sessão travou e o avatar fica desligado até a pessoa pedir.
+const CHAVE_TRABALHO = 'sinalume:avatar:trabalhando'
+const CHAVE_DESLIGADO = 'sinalume:avatar:desligado'
+
+function marcarTrabalho(ligado: boolean) {
+  try {
+    if (ligado) localStorage.setItem(CHAVE_TRABALHO, String(Date.now()))
+    else localStorage.removeItem(CHAVE_TRABALHO)
+  } catch {
+    /* sem localStorage */
+  }
+}
+
+export type MotivoDesligado = 'travou' | 'pouca-memoria' | 'escolha' | null
+
+/** Por que o avatar deve começar desligado neste aparelho (null = pode carregar). */
+export function motivoAvatarDesligado(): MotivoDesligado {
+  try {
+    const escolha = localStorage.getItem(CHAVE_DESLIGADO)
+    if (escolha === 'ligado') return null
+    if (escolha === 'travou' || escolha === 'escolha') return escolha
+    const marca = Number(localStorage.getItem(CHAVE_TRABALHO))
+    if (marca && Date.now() - marca < 30 * 60_000) {
+      localStorage.setItem(CHAVE_DESLIGADO, 'travou')
+      localStorage.removeItem(CHAVE_TRABALHO)
+      return 'travou'
+    }
+  } catch {
+    /* sem localStorage */
+  }
+  const memoria = (navigator as unknown as { deviceMemory?: number }).deviceMemory
+  if (memoria !== undefined && memoria <= 1) return 'pouca-memoria'
+  return null
+}
+
+/** Guarda a escolha da pessoa: ligar o avatar mesmo assim, ou deixar desligado. */
+export function escolherAvatar(ligado: boolean) {
+  try {
+    localStorage.setItem(CHAVE_DESLIGADO, ligado ? 'ligado' : 'escolha')
+    localStorage.removeItem(CHAVE_TRABALHO)
+  } catch {
+    /* sem localStorage */
+  }
+}
+
+if (typeof window !== 'undefined') {
+  // saída normal (fechar, trocar de app): não é travamento
+  window.addEventListener('pagehide', () => marcarTrabalho(false))
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') marcarTrabalho(false)
+  })
+}
+
 function tocar(glosa: string) {
+  marcarTrabalho(true)
   ultimaGlosa = glosa
   tocando = true
   ultimoPlay = Date.now()
@@ -92,6 +149,7 @@ function carregarScript(src: string): Promise<void> {
 }
 
 async function criarPlayer() {
+  marcarTrabalho(true)
   hospedeiro = document.createElement('div')
   hospedeiro.className = 'avatar__hospedeiro'
   const container = document.createElement('div')
@@ -104,6 +162,7 @@ async function criarPlayer() {
   w.onLoadPlayer = () => {
     enviar('setBaseUrl', DICIONARIO)
     enviar('setSlider', velocidade)
+    marcarTrabalho(false)
     mudarEstado('pronto')
     const pendente = fila.splice(0)
     if (pendente.length) void sinalizar(pendente.join('. '))
@@ -113,6 +172,7 @@ async function criarPlayer() {
     const agora = v === 'true' || v === '1'
     if (tocando && !agora) {
       tocando = false
+      if (filaGlosas.length === 0) marcarTrabalho(false)
       proximaGlosa()
     } else tocando = agora
   }
@@ -188,10 +248,13 @@ export async function sinalizar(texto: string): Promise<void> {
     glosa = (await Promise.all(partes.map(traduzirParaGlosa))).filter(Boolean).join(' ')
   } catch (e) {
     console.warn('[vlibras] tradução falhou', e)
-    ouvintesFalha.forEach((f) =>
-      f(navigator.onLine ? 'O tradutor do VLibras não respondeu. A legenda continua; tente de novo.' : 'Sem internet: o avatar precisa de conexão. A legenda continua funcionando.'),
-    )
-    return
+    if (!navigator.onLine) {
+      ouvintesFalha.forEach((f) => f('Sem internet: o avatar precisa de conexão. A legenda continua funcionando.'))
+      return
+    }
+    // o tradutor do governo não respondeu: o avatar sinaliza palavra por palavra (tradução simplificada)
+    glosa = glosaSimples(texto)
+    ouvintesFalha.forEach((f) => f('O tradutor do VLibras está fora do ar. O avatar está sinalizando palavra por palavra.'))
   }
   if (!glosa) return
   // se o avatar ainda está sinalizando, espera a vez (sem cortar o sinal no meio).
@@ -234,4 +297,15 @@ export function quebrarFrases(texto: string, maxPalavras = 12): string[] {
     }
   }
   return saida
+}
+
+/** Tradução simplificada quando o tradutor oficial falha: palavras em maiúsculas, sem pontuação. */
+export function glosaSimples(texto: string): string {
+  return texto
+    .normalize('NFC')
+    .toUpperCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .join(' ')
 }

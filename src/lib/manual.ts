@@ -47,6 +47,7 @@ export const MANUAL: SecaoManual[] = [
     resumo:
       'A pessoa ouvinte aponta a câmera para a pessoa surda. O app lê as mãos no próprio celular, reconhece cada sinal e monta a frase em português, na tela e em voz.',
     passos: [
+      'Antes, o app precisa conhecer os sinais: grave cada um 5 vezes em Ensinar sinais (ou baixe os da comunidade). Ele só reconhece sinais que já aprendeu.',
       'Na primeira vez, permita o uso da câmera.',
       'Enquadre as mãos e o rosto da pessoa surda, com boa luz. O selo verde "Mãos detectadas" confirma.',
       'A pessoa faz um sinal e abaixa as mãos (ou faz uma pausa). O sinal entra na frase.',
@@ -188,7 +189,8 @@ export const MANUAL: SecaoManual[] = [
       '"Não foi possível iniciar a câmera": permita a câmera nas configurações do navegador e recarregue.',
       '"Não ouvi nada": fale mais perto do celular ou digite o texto.',
       'O avatar não aparece: verifique a internet; a legenda continua funcionando.',
-      'O app não reconheceu o sinal: talvez ainda não tenha sido gravado — grave do seu jeito em Ensinar sinais.',
+      'O navegador mostrou uma página de erro ao usar o avatar: o celular ficou sem memória. Ao abrir de novo, o app deixa o avatar desligado e usa só a legenda; dá para ligar de novo em "Ligar o avatar mesmo assim".',
+      'O app não reconheceu o sinal: ele só reconhece sinais já gravados neste celular ou baixados da comunidade. Grave o sinal 5 vezes em Ensinar sinais e teste de novo.',
       'Algo diferente disso: mande pela aba Sugestões, opção "Algo não funcionou".',
     ],
     dicas: ['O Sinalume não substitui um intérprete de Libras em consultas médicas, assuntos jurídicos e outras situações importantes.'],
